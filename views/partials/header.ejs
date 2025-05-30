@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title || 'Academia' %></title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">Academia</a>
+    <% if (user) { %>
+      <form class="ms-auto" action="/auth/logout" method="post">
+        <button class="btn btn-outline-light btn-sm">Salir</button>
+      </form>
+    <% } %>
+  </div>
+</nav>
+<div class="container mt-4">
+  <% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+  <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>

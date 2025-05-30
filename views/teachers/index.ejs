@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+
+<h1 class="mb-3">Profesores</h1>
+<a href="/teachers/new" class="btn btn-primary mb-3">Nuevo profesor</a>
+
+<% if (teachers.length === 0) { %>
+  <div class="alert alert-info">Aún no hay profesores registrados.</div>
+<% } else { %>
+<table class="table table-striped">
+  <thead>
+    <tr><th>Nombre</th><th>Email</th><th>Teléfono</th></tr>
+  </thead>
+  <tbody>
+    <% teachers.forEach(t => { %>
+      <tr>
+        <td><%= t.nombre %></td>
+        <td><%= t.email %></td>
+        <td><%= t.telefono %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<h1>Registrar Profesor</h1>
+<form action="/teachers" method="post" class="col-md-6">
+  <div class="mb-3">
+    <label class="form-label">Nombre</label>
+    <input name="nombre" value="<%= teacher.nombre || '' %>" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" value="<%= teacher.email || '' %>" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Teléfono</label>
+    <input name="telefono" value="<%= teacher.telefono || '' %>" class="form-control">
+  </div>
+  <button class="btn btn-success">Guardar</button>
+</form>
+<%- include('../partials/footer') %>
