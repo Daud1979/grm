@@ -47,3 +47,4 @@ document.querySelectorAll(".leer-mas-btn").forEach((btn) => {
         leerMasModal.hide();
       }
     });
+

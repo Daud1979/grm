@@ -1,0 +1,25 @@
+<%- include('./partials/header') %>
+<div class="container containermisionvision">
+     <h2 class="h2promocionactual">Promociones</h2>
+<section class="promocionactual">
+  <div class="grid-promocionactual">
+    <% imageGridItems.forEach((item, index) => { %>
+      <div class="card-promocion" onclick="abrirModalPromocion('<%= item.imagePathUno %>', '<%= item.description.replace(/'/g, "\\'") %>')">
+        <h3><%= item.title %></h3>
+        <img src="<%= item.imagePathUno %>" alt="Promoción <%= index + 1 %>">
+        <p class="descripcion"><%= item.description %></p>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<!-- Modal Promoción Detalle -->
+<div id="modal-promociondet" class="modal-promociondet" onclick="cerrarModalPromocion(event)">
+  <div class="modal-contenido-promociondet">
+    <span class="cerrar-promociondet" onclick="cerrarModalPromocion()">&times;</span>
+    <img id="modal-imagen-promociondet" src="" alt="Imagen en grande">
+    <p id="modal-descripcion-promociondet"></p>
+  </div>
+</div>
+<%- include('./partials/footer') %>
+<script src="/js/promociones.js"></script>

@@ -1,0 +1,49 @@
+<%- include('./partials/header') %>
+<div class="container logincontainer">
+  <div class="grm-login-card">
+     <h2 class="grm-title">Iniciar sesión</h2>
+
+    <form>
+      <!-- Tipo de usuario -->
+      
+      <div class="mb-3">
+        <label for="grm-rol" class="form-label">Tipo de usuario</label>
+        <select id="grm-rol" class="form-select" required>
+          <option selected disabled hidden>Selecciona un rol</option>
+          <option value="admin">Administrador</option>
+          <option value="docente">Docente</option>
+          <option value="tutor">Apoderado/Tutor</option>
+        </select>
+      </div>
+
+      <!-- Usuario -->
+      <div class="mb-3">
+        <label for="grm-usuario" class="form-label">Usuario </label>
+        <input
+          type="text"
+          id="grm-usuario"
+          class="form-control"
+          placeholder="Carnet de Identidad"
+          required
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-4">
+        <label for="grm-password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          id="grm-password"
+          class="form-control"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <!-- Botón -->
+      <button type="submit" class="btn grm-btn-login">Iniciar sesión</button>
+    </form>
+  </div>
+</div>
+
+<script src="/js/inciosesion.js"></script>

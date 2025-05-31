@@ -1,0 +1,32 @@
+<%- include('./partials/header') %>
+<div class="container containermisionvision">
+  <h2 class="h2cursos">CURSOS ACTUALES EN NUESTRO ESTABLECIMIENTO</h2>
+<% imageGridItems.forEach((curso, index) => { %>
+  <section class="cursosactual">
+    <h2 class="h2cursoactual"><%= curso.title %></h2>
+    <p class="pcursoactual"><%= curso.description %></p>
+
+    <!-- Grid de imágenes -->
+    <div class="imagen-gridactual">
+      <div class="imagen-itemactual">
+        <img src="<%= curso.imagePathUno %>" alt="<%= curso.imagePathUno %>">
+        <p class="pfechacursoactual"><%=`Fecha de la Foto: `+ curso.fechaRegistro.toLocaleDateString('es-ES') %></p>
+      </div>
+      <div class="imagen-itemactual">
+        <img src="<%= curso.imagePathDos %>" alt="<%= curso.imagePathDos %>">
+       <p class="pfechacursoactual"><%=`Fecha de la Foto: `+ curso.fechaRegistro.toLocaleDateString('es-ES') %></p>
+      </div>
+      <div class="imagen-itemactual">
+        <img src="<%= curso.imagePathTres %>" alt="<%= curso.imagePathUno %>">
+        <p class="pfechacursoactual"><%=`Fecha de la Foto: `+ curso.fechaRegistro.toLocaleDateString('es-ES') %></p>
+      </div>
+    </div>
+  </section>
+<% }) %>
+
+    <div id="imgModal" class="img-modal-overlay" role="dialog" aria-modal="true">
+  <img src="" alt="Imagen ampliada">
+</div>
+</div>
+<%- include('./partials/footer') %>
+<script src="/js/cursoactual.js"></script>
