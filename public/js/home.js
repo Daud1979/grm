@@ -1,48 +1,28 @@
  
-    // Galería de imágenes automática y modal
-    const images = [
-      '/images/imagen1.jpg',
-      '/images/imagen2.jpg',
-      '/images/imagen3.jpg',
-      '/images/imagen4.jpg',
-      '/images/imagen5.jpg',
-      '/images/imagen6.jpg',      
-        
-    ];
-  const logo = document.getElementById('logo');
+
   
-    const galleryScroll = document.getElementById("galleryScroll");
-
-    function crearGaleria() {
-      images.forEach((src, i) => {
-        const div = document.createElement("div");
-        div.classList.add("gallery-item");
-        div.innerHTML = `<img src="${src}" alt="Imagen ${i + 1}" loading="lazy" />`;
-        galleryScroll.appendChild(div);
-
-        // Click para abrir modal
-        div.addEventListener("click", () => {
-          const modalImage = document.getElementById("modalImage");
-          modalImage.src = src;
-          const modal = new bootstrap.Modal(document.getElementById("imageModal"));
-          modal.show();
-        });
-      });
-    }
-    crearGaleria();
 
     // Autoplay deslizado en galería (cada 3 segundos)
-    let scrollPos = 0;
-    function autoplayGallery() {
-      const containerWidth = galleryScroll.scrollWidth;
-      const visibleWidth = galleryScroll.clientWidth;
-      scrollPos += 400; // ancho item aprox
-      if (scrollPos > containerWidth - visibleWidth) scrollPos = 0;
-      galleryScroll.scrollTo({ left: scrollPos, behavior: "smooth" });
-    }
-    setInterval(autoplayGallery, 3000);
+ let scrollPos = 0;
+let scrollDirection = 1; // 1 para adelante, -1 para atrás
 
-   const leerMasModal = new bootstrap.Modal(document.getElementById('leerMasModal'));
+function autoplayGallery() {
+    const containerWidth = galleryScroll.scrollWidth;   
+    const visibleWidth = galleryScroll.clientWidth;     
+    const maxScroll = containerWidth - visibleWidth; 
+    scrollPos += 400 * scrollDirection;   
+    if (scrollDirection === 1 && scrollPos >= maxScroll) {
+        scrollPos = maxScroll;
+        scrollDirection = -1; 
+    } else if (scrollDirection === -1 && scrollPos <= 0) {
+        scrollPos = 0;      
+        scrollDirection = 1;
+    }    
+    galleryScroll.scrollTo({ left: scrollPos, behavior: "smooth" });
+}
+setInterval(autoplayGallery, 3000);
+
+const leerMasModal = new bootstrap.Modal(document.getElementById('leerMasModal'));
 const modalTitle = document.getElementById('leerMasModalLabel');
 const modalContent = document.getElementById('leerMasContent');
 const modalImage = document.getElementById('leerMasImage');
@@ -57,7 +37,6 @@ document.querySelectorAll(".leer-mas-btn").forEach((btn) => {
     modalTitle.textContent = title;
     modalContent.innerHTML = description;
     modalImage.src = imageSrc;
-
     leerMasModal.show();
   });
 });

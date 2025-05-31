@@ -1,0 +1,39 @@
+<%- include('./partials/header') %>
+<div class="container containermisionvision">
+     <section class="mision visionmision">
+        <h2>Mision</h2>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit incidunt culpa libero deserunt perferendis tenetur ad ipsa recusandae ducimus dignissimos nobis autem soluta officia suscipit labore atque, ab alias harum.</p>
+    </section>
+    <section class="vision visionmision">    
+        <h2>Vision</h2>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit incidunt culpa libero deserunt perferendis tenetur ad ipsa recusandae ducimus dignissimos nobis autem soluta officia suscipit labore atque, ab alias harum.</p>
+    </section>   
+</div>
+<section  id="sectiongaleria">
+    <div class="container">
+      <h2 class="">PLANTEL DE DOCENTES</h2>     
+       <div class="image-grid" >
+        <% if (imageGridItems && imageGridItems.length > 0) { %>
+            <% imageGridItems.forEach(function(item) { %>
+                <div class="grid-item" id="imgdocente">
+                    <img  src="<%= item.imagePath %>" alt="<%= item.title %>">
+                    <h3><%= item.title %></h3>
+                    <p><%= item.description %></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p class="no-images-message">No hay elementos disponibles para mostrar en la galería.</p>
+        <% } %>
+    </div>
+
+
+
+  </div>
+    </div>
+
+    
+
+    <img src="/images/logo.jpg" alt="Logo de tu sitio" style="max-width: 150px; margin-top: 50px; display: block; margin-left: auto; margin-right: auto;">
+
+    </body>
+<%- include('./partials/footer') %>
