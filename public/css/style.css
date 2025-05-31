@@ -26,10 +26,10 @@
     }
     #sectiongaleria{
       padding-top: 8rem;
-   
+      text-align: center;
     }
     .containermisionvision{
- padding-top: 8rem;
+  padding-top: 8rem;
     }
     .vision{
       justify-self: end;
@@ -41,13 +41,17 @@
     .visionmision{
         width: 50%;       
         margin: 0;
-        padding: 0;
+        padding: 1rem;
       }
  .navbar-toggler {
   background-color: white;
   border: 1px solid black; /* opcional */
 }
-
+.sectioncolor{
+  background: rgb(230, 229, 229);
+  border-radius: 15px;
+  padding: 1rem;
+}
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
@@ -90,7 +94,15 @@
     .gallery-item:hover img {
       transform: scale(1.1);
     }
-  
+    .cardevento:hover{
+       transform: scale(1.1);
+    }
+  .historia{
+    text-align: center;
+  }
+  .historia p{
+     text-align: justify;
+  }
 
     /* Secciones */
     section {
@@ -293,21 +305,21 @@
 }
 
 /* --- Responsividad --- */
+ #imageneventos{
+      margin-top: 1rem;
+  }
 
-/* Para pantallas más pequeñas, ajusta el número de columnas si es necesario */
-@media (max-width: 768px) {
-  .image-grid {
+
+  @media (max-width: 768px) {
+    .image-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Podría ser 2 columnas */
     gap: 15px;
     padding: 15px;
   }
   .grid-item img {
       height: 180px; /* Ligeramente más bajas en móviles */
-  }
-}
-
-  @media (max-width: 768px) {
-      .gallery-item {
+  }  
+    .gallery-item {
         width: 250px;
         height: 250px;
       }
@@ -320,9 +332,9 @@
       .visionmision{
         width: 100%;       
       }
-       #sectiongaleria{
-      padding-top: 10rem;
-    .gallery-item {
+      #sectiongaleria{
+        padding-top: 10rem;
+        .gallery-item {
      
       width: 500px;
       height: 500px;
@@ -349,7 +361,8 @@
     gap: 10px;
     padding: 10px;
   }
-  .grid-item img {
+    .grid-item img {
       height: 220px; /* Se pueden hacer un poco más altas si son de 1 columna */
-  }
     }
+   
+  }

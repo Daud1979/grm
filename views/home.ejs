@@ -26,100 +26,60 @@
         </div>
       </div>
     </div>
+
   </section>
-  <!-- Próximos eventos -->
-  <section id="eventos">
-    <div class="container">
-      <h2 class="section-title">Próximos eventos en nuestra unidad educativa</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <div class="cardimagen">
-            <img  src="/images/imagen2.jpg" alt="Feria de ciencias" />
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">Feria de ciencias</h5>
-              <p class="card-text">5 de junio · Patio central</p>
-              <p class="card-text description">Los estudiantes de secundaria presentan sus proyectos científicos.</p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://source.unsplash.com/random/600x400?concert" alt="Concierto de primavera" />
-            <div class="card-body">
-              <h5 class="card-title">Concierto de primavera</h5>
-              <p class="card-text">12 de junio · Auditorio</p>
-              <p class="card-text description">Actuaciones del coro y orquesta del colegio.</p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <img src="/images/imagen1.jpg" alt="Carrera solidaria" />
-            <div class="card-body">
-              <h5 class="card-title">Carrera solidaria</h5>
-              <p class="card-text">20 de junio · Parque municipal</p>
-              <p class="card-text description">
-                Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-                <br /><br />
-                The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-              </p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
+    <!-- Próximos eventos -->
+    <section id="eventos">
+      <div class="container">
+        <h2 class="section-title">Próximos eventos en nuestra unidad educativa</h2>
+        <div class="row g-4 ">
+          <% if (imageGridItems.length > 0) { %>
+            <% imageGridItems.forEach(item => { %>
+              <div class="col-md-4 cardevento">
+                <div class="card h-100 shadow-sm">
+                  <div class="cardimagen">                       
+                    <img id="imageneventos" src="<%= item.imagePath %>" alt="<%= item.title %>" class="img-fluid" />
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title"><%= item.title %></h5>                    
+                    <p class="card-text description"><%= item.description %></p>
+                    <button class="leer-mas-btn">Leer más</button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p>No hay eventos disponibles.</p>
+          <% } %>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
   <!-- Noticias recientes -->
   <section id="noticias" >
     <div class="container">
       <h2 class="section-title">Noticias recientes de nuestra unidad educativa</h2>
-      <div class="row g-4">
-        <div class="col-lg-4 col-md-6 ">
-          <div class="card h-100 shadow-sm ">
-            <img src="https://source.unsplash.com/random/600x400?award" class="card-img-top" alt="Premio académico" />
-            <div class="card-body ">
-              <h5 class="card-title">Premio a la excelencia académica</h5>
-              <p class="card-text small text-muted">Publicado el 28 mayo 2025</p>
-              <p class="card-text description">
-                Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-                <br /><br />
-                The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-              </p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
+         <div class="row g-4 ">
+          <% if (imageGridItemsNoticia.length > 0) { %>
+            <% imageGridItemsNoticia.forEach(item => { %>
+              <div class="col-md-4 cardevento">
+                <div class="card h-100 shadow-sm">
+                  <div class="cardimagen">     
+                                  
+                    <img id="imageneventos" src="<%= item.imagePath %>" alt="<%= item.title %>" class="img-fluid" />
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title"><%= item.title %></h5>                    
+                    <p class="card-text description"><%= item.description %></p>
+                    <button class="leer-mas-btn">Leer más</button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p>No hay eventos disponibles.</p>
+          <% } %>
         </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 shadow-sm">
-            <img src="https://source.unsplash.com/random/600x400?robotics" class="card-img-top" alt="Club de robótica" />
-            <div class="card-body">
-              <h5 class="card-title">Nuevo club de robótica</h5>
-              <p class="card-text small text-muted">Publicado el 22 mayo 2025</p>
-              <p class="card-text description">Se inaugura el club de robótica con talleres semanales para los niveles de secundaria.</p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 shadow-sm ">
-            <img src="https://source.unsplash.com/random/600x400?graduation" class="card-img-top" alt="Graduación" />
-            <div class="card-body">
-              <h5 class="card-title">Ceremonia de graduación</h5>
-              <p class="card-text small text-muted">Publicado el 15 mayo 2025</p>
-              <p class="card-text description">
-                Este año la ceremonia se realizará en el auditorio principal con todas las medidas de bioseguridad.
-              </p>
-              <button class="leer-mas-btn">Leer más</button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
