@@ -9,6 +9,7 @@ const GestionActual = require('../models/GestionActual');
 const Promociones = require('../models/Promociones');
 const Usuarios=require('../models/Usuarios');
 const Carrusels=require('../models/Carrusel');
+const sharp = require('sharp');
 exports.home = async (req, res) => {
   const carouselPath = path.join(publicPath, 'images', 'carrusel');
   let carouselImages = [];
@@ -329,6 +330,58 @@ exports.eliminarcarrusel = async (req, res) => {
     return res.status(500).send('Error al eliminar la imagen');
   }
 };
+
+          // nativo de Node
+
+
+
+
+
+exports.verificarcarrusel = async (req, res) => {
+  try {
+    let { nombreImagen } = req.body;
+    const archivo = req.file;                    // viene de multer
+
+    if (!nombreImagen || !archivo) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    /* 1. Limpieza y normalización */
+    nombreImagen = path.basename(nombreImagen.trim());
+    const base   = nombreImagen.replace(/\.[^/.]+$/, ''); // sin extensión
+    const nombreNormalizado = `${base}.jpg`.toLowerCase();
+
+    /* 2. ¿Existe ya?  (case-insensitive) */
+    const existe = await Carrusels.findOne({
+      nombreImagen: { $regex: `^${base}\\.jpg$`, $options: 'i' }
+    });
+
+    if (existe) {
+      return res.json({ existe: 0 });            // ya está en BD
+    }
+
+    /* 3. Guardar la imagen como JPG */
+    const destinoDir  = path.join(__dirname, '..', 'public', 'images', 'carrusel');
+    const destinoPath = path.join(destinoDir, nombreNormalizado);
+
+    // Crea dir si no existe
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    // Convierte a JPG (calidad 80) y guarda
+    await sharp(archivo.buffer)
+      .jpeg({ quality: 80 })
+      .toFile(destinoPath);
+
+    /* 4. Inserta en la base de datos */
+    await Carrusels.create({ nombreImagen: nombreNormalizado });
+
+    return res.json({ existe: 1 });              // lo acabamos de guardar
+  } catch (err) {
+    console.error('Error verificarcarrusel:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 
 
 //////////

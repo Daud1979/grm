@@ -3,7 +3,17 @@ const usuario = document.querySelector('#grm-usuario');
 const passwrd = document.querySelector('#grm-password');
 const btnEnviar = document.querySelector('#btnEnviar');
 const mensajeError = document.querySelector('#mensajeError');
+
+
 ////////////////
+
+
+
+
+
+
+
+////////
 btnEnviar.addEventListener('click',()=>{
     
   mensajeError.classList.add('mensajeErrorLimpiar');
