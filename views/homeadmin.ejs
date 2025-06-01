@@ -1,0 +1,41 @@
+<%- include('./partials/headeradmin') %>
+<div class="container containercarrusel">
+      <h2>Subir imagen al Carrusel</h2>
+
+  <form class="carrusel-formulario" action="/carrusel/registrar" method="POST" enctype="multipart/form-data">
+    <input class="carrusel-input" type="text" name="nombreImagen" placeholder="Nombre de la imagen" required>
+    <input class="carrusel-file" type="file" name="imagen" accept="image/*" required>
+    <button class="carrusel-btn" type="submit">Subir Imagen</button>
+  </form>
+
+  <h3>Listado de Imágenes en el Carrusel</h3>
+  <table class="carrusel-tabla">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nombre</th>
+      <th>Imagen</th>
+      <th>Fecha</th>
+      <th>Acciones</th> <!-- Nueva columna -->
+    </tr>
+  </thead>
+  <tbody>
+    <% carrusel.forEach((img, i) => { %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= img.nombre %></td>
+        <td><img src="<%= img.url %>" style="height:70px"></td>
+        <td><%= new Date(img.fecha).toLocaleDateString() %></td>
+        <td>
+  <form method="POST" action="/admin/carrusel/eliminar" onsubmit="return confirm('¿Eliminar esta imagen?');">
+    <input type="hidden" name="nombreImagen" value="<%= img.nombre %>">
+    <button type="submit" class="carrusel-btn-eliminar">Eliminar</button>
+  </form>
+</td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+</div>
+<%- include('./partials/footer') %>

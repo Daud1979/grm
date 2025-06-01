@@ -552,7 +552,103 @@
       font-size: 1.75rem;
      color: black;
     }
+    #mensajeError{
+      color: red;
+      text-align: center;
+      font-style: italic;
+      font-size: 1rem;
+      display: none;
+    }
+    .mensajeErrorLimpiar{
+      display: nove;
+    }
+    .mensajeError{
+      display: block;
+    }
 /*FIN INICIO SESION*/
+/*carrusel admin*/
+.carrusel-formulario {
+      border: 1px solid #ccc;
+      padding: 20px;
+      width: 300px;
+      margin-bottom: 30px;
+    }
+
+    .carrusel-input,
+    .carrusel-file {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 8px;
+    }
+
+    .carrusel-btn {
+      padding: 8px 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .carrusel-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .carrusel-tabla th,
+    .carrusel-tabla td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+.containercarrusel{
+  padding-top: 8rem;
+  padding-bottom: 3rem;
+ 
+}
+    .carrusel-imagen {
+      height: 60px;
+    }
+    .carrusel-btn-eliminar {
+  background-color: #e74c3c; /* rojo intenso */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.carrusel-btn-eliminar:hover {
+  background-color: #c0392b; /* rojo más oscuro al pasar el mouse */
+}
+/*cerrar sesion admin*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   @media (max-width: 768px) {
     .logincontainer{
   padding-top:8rem ;

@@ -3,16 +3,16 @@
   <div class="grm-login-card">
      <h2 class="grm-title">Iniciar sesión</h2>
 
-    <form>
+   <div>
       <!-- Tipo de usuario -->
       
       <div class="mb-3">
         <label for="grm-rol" class="form-label">Tipo de usuario</label>
-        <select id="grm-rol" class="form-select" required>
-          <option selected disabled hidden>Selecciona un rol</option>
+        <select id="grm-rol" class="form-select" required>   
+            <option value="tutor">Apoderado/Tutor</option>     
           <option value="admin">Administrador</option>
           <option value="docente">Docente</option>
-          <option value="tutor">Apoderado/Tutor</option>
+        
         </select>
       </div>
 
@@ -24,6 +24,7 @@
           id="grm-usuario"
           class="form-control"
           placeholder="Carnet de Identidad"
+          value="admin01"
           required
         />
       </div>
@@ -36,13 +37,15 @@
           id="grm-password"
           class="form-control"
           placeholder="••••••••"
+          value="admin123"
           required
         />
       </div>
 
       <!-- Botón -->
-      <button type="submit" class="btn grm-btn-login">Iniciar sesión</button>
-    </form>
+      <button id="btnEnviar" class="btn grm-btn-login">Iniciar Sesión</button>
+    </div>
+    <p id="mensajeError">DATOS INCORRECTOS</p>
   </div>
 </div>
 

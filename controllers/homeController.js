@@ -1,5 +1,5 @@
-const User = require('../models/User'); 
 const fs = require('fs').promises; 
+const fss = require('fs');
 const path = require('path'); 
 const publicPath = path.join(__dirname, '..', 'public');
 const Docente = require('../models/Docente');
@@ -7,6 +7,8 @@ const Evento = require('../models/Eventos');
 const Noticia = require('../models/Noticias');
 const GestionActual = require('../models/GestionActual');
 const Promociones = require('../models/Promociones');
+const Usuarios=require('../models/Usuarios');
+const Carrusels=require('../models/Carrusel');
 exports.home = async (req, res) => {
   const carouselPath = path.join(publicPath, 'images', 'carrusel');
   let carouselImages = [];
@@ -180,3 +182,153 @@ exports.iniciosesion = async (req, res) =>{
   res.render('iniciosesion');
 
 }
+///////////
+exports.verificariniciosesion = async (req, res) => {
+  const { seleccion, usuario, passwrd } = req.body;
+
+  // Mapeo del tipo de cuenta
+  const tiposValidos = {
+    admin: 'administrador',
+    tutor: 'apoderado',      // ← asegúrate que este sea el tipo real en tu base
+    docente: 'docente'
+  };
+
+  const tipo = tiposValidos[seleccion];
+
+  if (!tipo) {
+    return res.json({ existe: 0 }); // Tipo no válido
+  }
+  
+  try {
+    const usuarioEncontrado = await Usuarios.findOne({
+      tipo: tipo,
+      usuario:usuario,
+      password: passwrd, // 
+      estado: 1
+    });
+    
+    if (usuarioEncontrado) {
+      return res.json({ existe: 1 });
+    } else {
+      return res.json({ existe: 0 });
+    }
+  } catch (error) {
+    console.error('Error al verificar el inicio de sesión:', error);
+    return res.status(500).json({ error: 'Error en el servidor' });
+  }
+};
+///////////
+
+
+
+exports.redireccionar = async (req, res) => {
+  const { seleccion, usuario, passwrd } = req.body;
+
+  const tiposValidos = {
+    admin  : 'administrador',
+    tutor  : 'apoderado',
+    docente: 'docente'
+  };
+  const tipo = tiposValidos[seleccion];
+  if (!tipo) return res.render('iniciosesion', { error: 'Tipo de cuenta inválido' });
+
+  try {
+    // 1️⃣  Verificar usuario
+    const usuarioEncontrado = await Usuarios.findOne({
+      tipo,
+      usuario,
+      password: passwrd,
+      estado: 1
+    });
+    if (!usuarioEncontrado) {
+      return res.render('iniciosesion', { error: 'Credenciales incorrectas' });
+    }
+
+    // 2️⃣  Solo para administrador
+    if (tipo === 'administrador') {
+      // 2.1- Leer todos los registros del carrusel
+      const carruselDocs = await Carrusels.find();   // usa el modelo correcto
+
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'carrusel');
+      const imagenes  = carruselDocs
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/carrusel/' + doc.nombreImagen,
+          fecha : doc.fechaRegistro
+        }));
+
+      // 2.3- Renderizar la vista
+      return res.render('homeadmin', {
+        datos   : usuarioEncontrado,
+        carrusel: imagenes
+      });
+    }
+
+    // 3️⃣  Otros tipos (descomenta cuando tengas las vistas)
+    // if (tipo === 'docente')   return res.render('homedocente', { usuario: usuarioEncontrado });
+    // if (tipo === 'apoderado') return res.render('hometutor',   { usuario: usuarioEncontrado });
+
+    return res.render('iniciosesion', { error: 'Tipo de usuario sin vista asignada' });
+
+  } catch (error) {
+    console.error('Error al redireccionar:', error);
+    return res.status(500).render('iniciosesion', { error: 'Error en el servidor' });
+  }
+};
+
+///////
+
+exports.eliminarcarrusel = async (req, res) => {
+  try {
+    const { nombreImagen } = req.body;  // viene del input hidden del formulario
+
+    if (!nombreImagen) {
+      return res.status(400).send('Nombre de imagen faltante');
+    }
+
+    /* 1️⃣  Eliminar de la base de datos */
+    const resultado = await Carrusels.deleteOne({ nombreImagen });
+
+    // Si no encontró nada en la DB, avisa pero continúa para intentar borrar archivo
+    if (resultado.deletedCount === 0) {
+      console.warn(`No se encontró ${nombreImagen} en la colección carrusel.`);
+    }
+
+    /* 2️⃣  Eliminar el archivo físico */
+    const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'carrusel', nombreImagen);
+    if (fss.existsSync(rutaImagen)) {
+      fss.unlinkSync(rutaImagen);
+      console.log(`Imagen ${nombreImagen} eliminada del disco`);
+    } else {
+      console.warn(`Imagen ${nombreImagen} no existe en el disco`);
+    }
+
+    /* 3️⃣  Redirigir o responder */
+    const carruselDocs = await Carrusels.find();   // usa el modelo correcto
+
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'carrusel');
+      const imagenes  = carruselDocs
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/carrusel/' + doc.nombreImagen,
+          fecha : doc.fechaRegistro
+        }));
+
+      // 2.3- Renderizar la vista
+      return res.render('homeadmin', {
+       
+        carrusel: imagenes
+      });   // cambia la ruta según tu panel
+    // o: res.json({ ok: true });
+  } catch (error) {
+    console.error('Error al eliminar carrusel:', error);
+    return res.status(500).send('Error al eliminar la imagen');
+  }
+};
+
+
+//////////
