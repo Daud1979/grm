@@ -613,7 +613,7 @@
   background-color: #e74c3c; /* rojo intenso */
   color: white;
   border: none;
-  padding: 6px 12px;
+  width: 70px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -621,6 +621,21 @@
 }
 
 .carrusel-btn-eliminar:hover {
+  background-color: #c0392b; /* rojo más oscuro al pasar el mouse */
+}
+
+  .carrusel-btn-modificar {
+  background-color: #0968e4; /* rojo intenso */
+  color: white;
+  border: none;
+  width: 70px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.carrusel-btn-modificar:hover {
   background-color: #c0392b; /* rojo más oscuro al pasar el mouse */
 }
 /*cerrar sesion admin*/

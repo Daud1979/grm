@@ -26,7 +26,7 @@ btnSubirimagen.addEventListener('click', () => {
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data.existe);
+        
         if (data.existe == 1) {
            window.location.reload();
         } else {

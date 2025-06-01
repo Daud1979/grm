@@ -1,0 +1,64 @@
+<%- include('./partials/headeradmin') %>
+<div class="container containercarrusel">
+      <h2>Subir Nuevo Curso</h2>
+
+  <div class="carrusel-formulario">
+  <input class="carrusel-input" type="text" name="titulo" id="titulo" placeholder="Curso" required>
+  <textarea input class="carrusel-input" type="text" name="descripcion" id="descripcion" required> </textarea>
+  <input class="carrusel-file" type="file" name="imagen1" id="imagenFile1" accept="image/*" required>
+  <input class="carrusel-file" type="file" name="imagen2" id="imagenFile2" accept="image/*" >
+  <input class="carrusel-file" type="file" name="imagen3" id="imagenFile3" accept="image/*" >
+  <button class="carrusel-btn" id="btnSubirimagen">Registrar Curso</button>
+  </div>
+
+
+  <h3>Listado de Cursos Registrados</h3>
+  <table class="carrusel-tabla ">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Curso</th>
+      <th>Descripcion</th>
+      <th>Imagen</th>  
+      <th>Imagen</th>  
+      <th>Imagen</th>     
+      <th>oculta</th>
+      <th>Acciones</th> <!-- Nueva columna -->
+    </tr>
+  </thead>
+<tbody id="eventodatos">
+  <% carrusel.forEach((img, i) => { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= img.titulo %></td>
+      <td><%= img.descripcion %></td>
+      <td><img src="<%= img.url1 %>" style="height:70px"></td>
+      <td><img src="<%= img.url2 %>" style="height:70px"></td>
+      <td><img src="<%= img.url3 %>" style="height:70px"></td>
+      <td><%= img.id %></td>
+      <td>      
+          <!-- ✅ Botón con data-id -->
+          <button 
+          id="eliminarfila"
+                  class="carrusel-btn-eliminar"
+                  data-id="<%= img.id %>">
+            Eliminar
+          </button>
+       
+        <button 
+        id="modificarfila"
+                class="carrusel-btn-modificar"
+                data-id="<%= img.id %>">
+          Modificar
+        </button>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
+
+
+</table>
+
+</div>
+<script src="/js/cursoadmin.js"></script>
+<%- include('./partials/footer') %>

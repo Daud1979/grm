@@ -37,11 +37,12 @@
             <% imageGridItems.forEach(item => { %>
               <div class="col-md-4 cardevento">
                 <div class="card h-100 shadow-sm">
-                  <div class="cardimagen">                       
+                  <div class="cardimagen">   
+                                 
                     <img id="imageneventos" src="<%= item.imagePath %>" alt="<%= item.title %>" class="img-fluid" />
                   </div>
                   <div class="card-body">
-                    <h5 class="card-title"><%= item.title %></h5>                    
+                    <h5 class="card-title"><%= item.titulo %></h5>                    
                     <p class="card-text description"><%= item.description %></p>
                     <button class="leer-mas-btn">Leer más</button>
                   </div>
@@ -69,7 +70,7 @@
                     <img id="imageneventos" src="<%= item.imagePath %>" alt="<%= item.title %>" class="img-fluid" />
                   </div>
                   <div class="card-body">
-                    <h5 class="card-title"><%= item.title %></h5>                    
+                    <h5 class="card-title"><%= item.titulo %></h5>                    
                     <p class="card-text description"><%= item.description %></p>
                     <button class="leer-mas-btn">Leer más</button>
                   </div>

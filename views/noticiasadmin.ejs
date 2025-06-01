@@ -1,0 +1,60 @@
+<%- include('./partials/headeradmin') %>
+<div class="container containercarrusel">
+      <h2>Subir Nueva Noticia</h2>
+
+  <div class="carrusel-formulario">
+  <input class="carrusel-input" type="text" name="titulo" id="titulo" placeholder="Titulo de Noticia" required>
+  <textarea input class="carrusel-input" type="text" name="descripcion" id="descripcion" required> </textarea>
+  <input class="carrusel-input" type="text" name="nombreImagen" id="nombreImagen" placeholder="Nombre de la imagen" required>
+  <input class="carrusel-file" type="file" name="imagen" id="imagenFile" accept="image/*" required>
+  <button class="carrusel-btn" id="btnSubirimagen">Registrar Evento</button>
+  </div>
+
+
+  <h3>Listado de Noticias Registradas</h3>
+  <table class="carrusel-tabla ">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Titulo</th>
+      <th>Descripcion</th>
+      <th>Imagen</th>     
+      <th>Acciones</th> <!-- Nueva columna -->
+    </tr>
+  </thead>
+<tbody id="eventodatos">
+  <% carrusel.forEach((img, i) => { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= img.titulo %></td>
+      <td><%= img.descripcion %></td>
+      <td><img src="<%= img.url %>" style="height:70px"></td>
+    
+
+      <!--  🆕  Columna oculta (solo para inspección, no se muestra) -->
+   
+
+      <td>
+        <form method="POST"
+              action="/noticias"
+              class="form-eliminar">
+          <!--  🆕  El id viaja en un input hidden  -->
+          <input style="display: none;"  name="id" value="<%= img.id %>">
+
+          <!--  También lo ponemos en data-id por si lo necesitas en JS  -->
+          <button type="submit"
+                  class="carrusel-btn-eliminar"
+                  data-id="<%= img._id %>">
+            Eliminar
+          </button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
+
+</table>
+
+</div>
+<script src="/js/noticiasadmin.js"></script>
+<%- include('./partials/footer') %>

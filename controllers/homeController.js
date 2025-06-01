@@ -29,7 +29,7 @@ exports.home = async (req, res) => {
 
       return {
         imagePath: `/images/eventos/${archivo}`,
-        title: ev.nombre,
+        titulo: ev.titulo,
         description: ev.descripcion
       };
     });
@@ -37,10 +37,9 @@ exports.home = async (req, res) => {
     const noticias = await Noticia.find().lean();
     imageGridItemsNoticia = noticias.map(ev => {
       const archivo = ev.nombreImagen?.trim() ? ev.nombreImagen : 'default.jpg';
-
       return {
         imagePath: `/images/noticias/${archivo}`,
-        title: ev.nombre,
+        titulo: ev.titulo,
         description: ev.descripcion
       };
     });
@@ -95,7 +94,7 @@ src = `/images/plantel/${docente.nombreImagen}`;
 
 exports.cursoactual = async (req, res) => {
   try {
-    const cursos = await GestionActual.find().lean();
+    const cursos = await GestionActual.find().lean(); 
     const plantelDir = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
 
     const imageGridItems = await Promise.all(
@@ -138,6 +137,7 @@ exports.cursoactual = async (req, res) => {
         };
       })
     );
+    console.log(imageGridItems)
     res.render('cursoactual', { imageGridItems });
 
   } catch (error) {
@@ -219,9 +219,30 @@ exports.verificariniciosesion = async (req, res) => {
   }
 };
 ///////////
+exports.evento= async (req, res) =>{
+   const  resultado = await Evento.find();   // usa el modelo correcto
+   
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
+      const imagenes  = resultado 
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/eventos/' + doc.nombreImagen,
+         fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
+          descripcion:doc.descripcion,
+          titulo:doc.titulo,
+          id:doc._id.toString()
+        }));
+  
+      // 2.3- Renderizar la vista
+      return res.render('eventosadmin', {
+        
+        carrusel: imagenes
+      });
 
-
-
+}
+////////
 exports.redireccionar = async (req, res) => {
   const { seleccion, usuario, passwrd } = req.body;
 
@@ -331,12 +352,6 @@ exports.eliminarcarrusel = async (req, res) => {
   }
 };
 
-          // nativo de Node
-
-
-
-
-
 exports.verificarcarrusel = async (req, res) => {
   try {
     let { nombreImagen } = req.body;
@@ -381,7 +396,397 @@ exports.verificarcarrusel = async (req, res) => {
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+/*EVENTOS*/
+exports.evento= async (req, res) =>{
+   const  resultado = await Evento.find();   // usa el modelo correcto
+   
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
+      const imagenes  = resultado 
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/eventos/' + doc.nombreImagen,
+         fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
+          descripcion:doc.descripcion,
+          titulo:doc.titulo,
+          id:doc._id.toString()
+        }));
+  
+      // 2.3- Renderizar la vista
+      return res.render('eventosadmin', {
+        
+        carrusel: imagenes
+      });
+
+}
+exports.eliminarevento = async (req, res) => {   
+  try {
+    const { id } = req.body;  // viene del input hidden del formulario
+
+    if (!id) {
+      return res.status(400).send('Nombre de imagen faltante');
+    }
+      const documento =await Evento.findOne({ _id: id });        
+      await Evento.deleteOne({ _id: id });     
+      const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'eventos', documento.nombreImagen);
+     
+      if (fss.existsSync(rutaImagen)) {       
+        fss.unlinkSync(rutaImagen);       
+      }  
+       const  resultado = await Evento.find();   // usa el modelo correcto
+   
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
+      const imagenes  = resultado 
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/eventos/' + doc.nombreImagen,
+         fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
+          descripcion:doc.descripcion,
+          titulo:doc.titulo,
+          id:doc._id.toString()
+        }));
+  
+      // 2.3- Renderizar la vista
+      return res.render('eventosadmin', {
+        
+        carrusel: imagenes
+      });
+    
+  } catch (error) {
+    console.error('Error al eliminar carrusel:', error);
+    return res.status(500).send('Error al eliminar la imagen');
+  }
+};
+exports.registrarevento = async (req, res) => {
+  try {
+    let { nombreImagen,titulo,descripcion } = req.body;
+    const archivo = req.file;                    // viene de multer
+
+    if (!nombreImagen || !archivo) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    /* 1. Limpieza y normalización */
+    nombreImagen = path.basename(nombreImagen.trim());
+    const base   = nombreImagen.replace(/\.[^/.]+$/, ''); // sin extensión
+    const nombreNormalizado = `${base}.jpg`.toLowerCase();
+
+    /* 2. ¿Existe ya?  (case-insensitive) */
+    const existe = await Evento.findOne({
+      nombreImagen: { $regex: `^${base}\\.jpg$`, $options: 'i' }
+    });
+
+    if (existe) {
+      return res.json({ existe: 0 });            // ya está en BD
+    }
+
+    /* 3. Guardar la imagen como JPG */
+    const destinoDir  = path.join(__dirname, '..', 'public', 'images', 'eventos');
+    const destinoPath = path.join(destinoDir, nombreNormalizado);
+
+    // Crea dir si no existe
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    // Convierte a JPG (calidad 80) y guarda
+    await sharp(archivo.buffer)
+      .jpeg({ quality: 80 })
+      .toFile(destinoPath);
+
+    /* 4. Inserta en la base de datos */
+    await Evento.create({ nombreImagen: nombreNormalizado, descripcion:descripcion, titulo:titulo,fechaRegistro: new Date()  });
+
+    return res.json({ existe: 1 });              // lo acabamos de guardar
+  } catch (err) {
+    console.error('Error verificarcarrusel:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+/*FIN EVENTOS*/
+/*NOTICIAS*/
+exports.noticia= async (req, res) =>{
+   const  resultado = await Noticia.find();   // usa el modelo correcto
+   
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'noticias');
+      const imagenes  = resultado 
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/noticias/' + doc.nombreImagen,
+         fecha: doc.Publicacion,
+          descripcion:doc.descripcion,
+          titulo:doc.titulo,
+          id:doc._id.toString()
+        }));
+  
+      // 2.3- Renderizar la vista
+      return res.render('noticiasadmin', {
+        
+        carrusel: imagenes
+      });
+
+}
+exports.eliminarnoticia = async (req, res) => {   
+  try {
+    const { id } = req.body;  // viene del input hidden del formulario
+
+    if (!id) {
+      return res.status(400).send('Nombre de imagen faltante');
+    }
+      const documento =await Noticia.findOne({ _id: id });       
+      
+      await Noticia.deleteOne({ _id: id });     
+      const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'noticias', documento.nombreImagen);
+     
+      if (fss.existsSync(rutaImagen)) {       
+        fss.unlinkSync(rutaImagen);       
+      }  
+       const  resultado = await Noticia.find();   // usa el modelo correcto
+   
+      // 2.2- Filtrar imágenes que realmente existan
+      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'noticias');
+      const imagenes  = resultado 
+        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+        .map(doc => ({
+          nombre: doc.nombreImagen,
+          url   : '/images/noticias/' + doc.nombreImagen,
+         fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
+          descripcion:doc.descripcion,
+          titulo:doc.titulo,
+          id:doc._id.toString()
+        }));
+  
+      // 2.3- Renderizar la vista
+      return res.render('noticiasadmin', {
+        
+        carrusel: imagenes
+      });
+    
+  } catch (error) {
+    console.error('Error al eliminar carrusel:', error);
+    return res.status(500).send('Error al eliminar la imagen');
+  }
+};
+exports.registrarnoticia = async (req, res) => {
+  try {
+    let { nombreImagen,titulo,descripcion } = req.body;
+    const archivo = req.file;                    // viene de multer
+
+    if (!nombreImagen || !archivo) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    /* 1. Limpieza y normalización */
+    nombreImagen = path.basename(nombreImagen.trim());
+    const base   = nombreImagen.replace(/\.[^/.]+$/, ''); // sin extensión
+    const nombreNormalizado = `${base}.jpg`.toLowerCase();
+
+    /* 2. ¿Existe ya?  (case-insensitive) */
+    const existe = await Noticia.findOne({
+      nombreImagen: { $regex: `^${base}\\.jpg$`, $options: 'i' }
+    });
+
+    if (existe) {
+      return res.json({ existe: 0 });            // ya está en BD
+    }
+
+    /* 3. Guardar la imagen como JPG */
+    const destinoDir  = path.join(__dirname, '..', 'public', 'images', 'noticias');
+    const destinoPath = path.join(destinoDir, nombreNormalizado);
+
+    // Crea dir si no existe
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    // Convierte a JPG (calidad 80) y guarda
+    await sharp(archivo.buffer)
+      .jpeg({ quality: 80 })
+      .toFile(destinoPath);
+
+    /* 4. Inserta en la base de datos */
+    await Noticia.create({ nombreImagen: nombreNormalizado, descripcion:descripcion, titulo:titulo,fechaRegistro: new Date()  });
+
+    return res.json({ existe: 1 });              // lo acabamos de guardar
+  } catch (err) {
+    console.error('Error verificarcarrusel:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+/*FIN NOTICIAS*/
+/*CURSOS*/
+
+exports.curso = async (req, res) => {
+  const resultado = await GestionActual.find();
+
+  const dirPublic = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
+
+  const carrusel = resultado.map(doc => {
+    // Verifica cada imagen individualmente
+    const imagenes = [];
+
+    if (doc.nombreImagenUno && fss.existsSync(path.join(dirPublic, doc.nombreImagenUno))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenUno);
+    }
+    if (doc.nombreImagenDos && fss.existsSync(path.join(dirPublic, doc.nombreImagenDos))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenDos);
+    }
+    if (doc.nombreImagenTres && fss.existsSync(path.join(dirPublic, doc.nombreImagenTres))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenTres);
+    }
+
+    return {
+      titulo      : doc.Curso,
+      descripcion : doc.descripcion,
+      url1    : imagenes[0], // array con 1, 2 o 3 imágenes
+      url2    : imagenes[1], // array con 1, 2 o 3 imágenes
+      url3    : imagenes[2], // array con 1, 2 o 3 imágenes
+      id          : doc._id.toString(),
+      fecha       : new Date(doc.fechaRegistro).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    };
+  });
+
+  return res.render('cursosadmin', { carrusel });
+};
+
+exports.eliminarcurso = async (req, res) => {   
+  try {
+    const { id } = req.body;
+ console.log(req.body);
+    if (!id) {
+      return res.status(400).json({ existe: 0, error: 'ID de curso faltante' });
+    }
+
+    const documento = await GestionActual.findOne({ _id: id });
+
+    if (!documento) {
+      return res.status(404).json({ existe: 0, error: 'Curso no encontrado' });
+    }
+
+    // Eliminar de la base de datos
+    await GestionActual.deleteOne({ _id: id });
+
+    const dirImagenes = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
+
+    const imagenes = [documento.nombreImagenUno, documento.nombreImagenDos, documento.nombreImagenTres];
+    imagenes.forEach(nombre => {
+      if (nombre) {
+        const ruta = path.join(dirImagenes, nombre);
+        if (fss.existsSync(ruta)) {
+          fss.unlinkSync(ruta);
+        }
+      }
+    });
+ const resultado = await GestionActual.find();
+
+  const dirPublic = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
+
+  const carrusel = resultado.map(doc => {
+    // Verifica cada imagen individualmente
+    const imagenes = [];
+
+    if (doc.nombreImagenUno && fss.existsSync(path.join(dirPublic, doc.nombreImagenUno))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenUno);
+    }
+    if (doc.nombreImagenDos && fss.existsSync(path.join(dirPublic, doc.nombreImagenDos))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenDos);
+    }
+    if (doc.nombreImagenTres && fss.existsSync(path.join(dirPublic, doc.nombreImagenTres))) {
+      imagenes.push('/images/cursoactual/' + doc.nombreImagenTres);
+    }
+
+    return {
+      titulo      : doc.Curso,
+      descripcion : doc.descripcion,
+      url1    : imagenes[0], // array con 1, 2 o 3 imágenes
+      url2    : imagenes[1], // array con 1, 2 o 3 imágenes
+      url3    : imagenes[2], // array con 1, 2 o 3 imágenes
+      id          : doc._id.toString(),
+      fecha       : new Date(doc.fechaRegistro).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    };
+  });
+
+   return res.json({ existe: 1 });
+   
+
+  } catch (error) {
+    console.error('Error al eliminar curso:', error);
+     return res.json({ existe: 0 });
+  }
+};
 
 
 
-//////////
+
+exports.registrarcurso = async (req, res) => {
+  try {
+    const { titulo, descripcion } = req.body;
+
+    /* 1) Verificar que la imagen principal exista -------------------------- */
+    if (!req.files || !req.files.imagen || req.files.imagen.length === 0) {
+      return res.status(400).json({ error: 'La imagen principal es obligatoria' });
+    }
+
+    /* 2) Función de ayuda para slug y timestamp --------------------------- */
+    const slugify = str =>
+      str
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+    const now  = new Date();
+    const tms  =
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0') +
+      String(now.getMilliseconds()).padStart(3, '0');
+
+    const slug = slugify(titulo);
+
+    /* 3) Carpeta destino --------------------------------------------------- */
+    const destinoDir = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    /* 4) Función genérica para procesar y guardar cada imagen -------------- */
+    const procesarImagen = async (file, idx) => {
+      const nombreFinal = `${slug}-${tms}-${idx}.jpg`;
+      const destino     = path.join(destinoDir, nombreFinal);
+
+      await sharp(file.buffer)
+        .jpeg({ quality: 80 })
+        .toFile(destino);
+
+      return nombreFinal; // se guarda solo el nombre
+    };
+
+    /* 5) Procesar la imagen principal (idx 1) ------------------------------ */
+    const nombreImg1 = await procesarImagen(req.files.imagen[0], 1);
+
+    /* 6) Procesar opcionales (idx 2 y 3) ----------------------------------- */
+    const nombreImg2 = req.files.imagen2 && req.files.imagen2[0]
+      ? await procesarImagen(req.files.imagen2[0], 2)
+      : null;
+
+    const nombreImg3 = req.files.imagen3 && req.files.imagen3[0]
+      ? await procesarImagen(req.files.imagen3[0], 3)
+      : null;
+
+    /* 7) Guardar en la BD -------------------------------------------------- */
+    await GestionActual.create({
+      Curso            : titulo,
+      descripcion,
+      nombreImagenUno  : nombreImg1,
+      nombreImagenDos  : nombreImg2,
+      nombreImagenTres : nombreImg3,
+      fechaRegistro    : now
+    });
+
+    return res.json({ existe: 1 });
+  } catch (err) {
+    console.error('Error registrarcurso:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+/*FIN CURSOS*/
