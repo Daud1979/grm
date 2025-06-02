@@ -10,6 +10,7 @@ const Promociones = require('../models/Promociones');
 const Usuarios=require('../models/Usuarios');
 const Carrusels=require('../models/Carrusel');
 const sharp = require('sharp');
+/*PANTALLA INICIAL */
 exports.home = async (req, res) => {
   const carouselPath = path.join(publicPath, 'images', 'carrusel');
   let carouselImages = [];
@@ -58,7 +59,6 @@ exports.home = async (req, res) => {
     imageGridItemsNoticia
   });
 };
-
 exports.informacion = async (req, res) => {
   try {
     const docentes = await Docente.find().lean();
@@ -91,7 +91,6 @@ src = `/images/plantel/${docente.nombreImagen}`;
     res.render('informacion', { imageGridItems: [] });
   }
 };
-
 exports.cursoactual = async (req, res) => {
   try {
     const cursos = await GestionActual.find().lean(); 
@@ -145,7 +144,6 @@ exports.cursoactual = async (req, res) => {
     res.render('cursoactual', { imageGridItems: [] });
   }
 };
-
 exports.promociones = async (req, res) => {
   try {
     const promocion = await Promociones.find().lean();
@@ -178,12 +176,12 @@ exports.promociones = async (req, res) => {
     res.render('promociones', { imageGridItems: [] });
   }
 };
+/*FIN PANTALLA INICIAL */
 
+/*INICIO SESION */
 exports.iniciosesion = async (req, res) =>{
   res.render('iniciosesion');
-
 }
-///////////
 exports.verificariniciosesion = async (req, res) => {
   const { seleccion, usuario, passwrd } = req.body;
 
@@ -218,57 +216,11 @@ exports.verificariniciosesion = async (req, res) => {
     return res.status(500).json({ error: 'Error en el servidor' });
   }
 };
-///////////
-exports.evento= async (req, res) =>{
-   const  resultado = await Evento.find();   // usa el modelo correcto
-   
-      // 2.2- Filtrar imágenes que realmente existan
-      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
-      const imagenes  = resultado 
-        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
-        .map(doc => ({
-          nombre: doc.nombreImagen,
-          url   : '/images/eventos/' + doc.nombreImagen,
-         fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
-          descripcion:doc.descripcion,
-          titulo:doc.titulo,
-          id:doc._id.toString()
-        }));
-  
-      // 2.3- Renderizar la vista
-      return res.render('eventosadmin', {
-        
-        carrusel: imagenes
-      });
+/*FIN INICIO SESION */
 
-}
-////////
-exports.redireccionar = async (req, res) => {
-  const { seleccion, usuario, passwrd } = req.body;
-
-  const tiposValidos = {
-    admin  : 'administrador',
-    tutor  : 'apoderado',
-    docente: 'docente'
-  };
-  const tipo = tiposValidos[seleccion];
-  if (!tipo) return res.render('iniciosesion', { error: 'Tipo de cuenta inválido' });
-
-  try {
-    // 1️⃣  Verificar usuario
-    const usuarioEncontrado = await Usuarios.findOne({
-      tipo,
-      usuario,
-      password: passwrd,
-      estado: 1
-    });
-    if (!usuarioEncontrado) {
-      return res.render('iniciosesion', { error: 'Credenciales incorrectas' });
-    }
-
-    // 2️⃣  Solo para administrador
-    if (tipo === 'administrador') {
-      // 2.1- Leer todos los registros del carrusel
+/*CARRUSEL */
+exports.carrusel = async (req, res) => {
+ 
       const carruselDocs = await Carrusels.find();   // usa el modelo correcto
 
       // 2.2- Filtrar imágenes que realmente existan
@@ -282,77 +234,34 @@ exports.redireccionar = async (req, res) => {
         }));
 
       // 2.3- Renderizar la vista
-      return res.render('homeadmin', {
-        datos   : usuarioEncontrado,
+      return res.render('homeadmin', {       
         carrusel: imagenes
       });
-    }
-
-    // 3️⃣  Otros tipos (descomenta cuando tengas las vistas)
-    // if (tipo === 'docente')   return res.render('homedocente', { usuario: usuarioEncontrado });
-    // if (tipo === 'apoderado') return res.render('hometutor',   { usuario: usuarioEncontrado });
-
-    return res.render('iniciosesion', { error: 'Tipo de usuario sin vista asignada' });
-
-  } catch (error) {
-    console.error('Error al redireccionar:', error);
-    return res.status(500).render('iniciosesion', { error: 'Error en el servidor' });
-  }
 };
-
-///////
-
 exports.eliminarcarrusel = async (req, res) => {
   try {
-    const { nombreImagen } = req.body;  // viene del input hidden del formulario
-
+    const { nombreImagen } = req.body; 
     if (!nombreImagen) {
       return res.status(400).send('Nombre de imagen faltante');
-    }
-
-    /* 1️⃣  Eliminar de la base de datos */
-    const resultado = await Carrusels.deleteOne({ nombreImagen });
-
-    // Si no encontró nada en la DB, avisa pero continúa para intentar borrar archivo
+    }   
+    const resultado = await Carrusels.deleteOne({ nombreImagen });    
     if (resultado.deletedCount === 0) {
       console.warn(`No se encontró ${nombreImagen} en la colección carrusel.`);
     }
-
-    /* 2️⃣  Eliminar el archivo físico */
     const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'carrusel', nombreImagen);
     if (fss.existsSync(rutaImagen)) {
       fss.unlinkSync(rutaImagen);
       console.log(`Imagen ${nombreImagen} eliminada del disco`);
     } else {
       console.warn(`Imagen ${nombreImagen} no existe en el disco`);
-    }
-
-    /* 3️⃣  Redirigir o responder */
-    const carruselDocs = await Carrusels.find();   // usa el modelo correcto
-
-      // 2.2- Filtrar imágenes que realmente existan
-      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'carrusel');
-      const imagenes  = carruselDocs
-        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
-        .map(doc => ({
-          nombre: doc.nombreImagen,
-          url   : '/images/carrusel/' + doc.nombreImagen,
-          fecha : doc.fechaRegistro
-        }));
-
-      // 2.3- Renderizar la vista
-      return res.render('homeadmin', {
-       
-        carrusel: imagenes
-      });   // cambia la ruta según tu panel
-    // o: res.json({ ok: true });
+    }  
+    return res.json({ existe: 1 }); 
   } catch (error) {
     console.error('Error al eliminar carrusel:', error);
-    return res.status(500).send('Error al eliminar la imagen');
+    return res.json({ existe: 0 }); 
   }
 };
-
-exports.verificarcarrusel = async (req, res) => {
+exports.registrarcarrusel = async (req, res) => {
   try {
     let { nombreImagen } = req.body;
     const archivo = req.file;                    // viene de multer
@@ -393,52 +302,44 @@ exports.verificarcarrusel = async (req, res) => {
     return res.json({ existe: 1 });              // lo acabamos de guardar
   } catch (err) {
     console.error('Error verificarcarrusel:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    return res.json({ existe: 0 }); 
   }
 };
+/* FIN CARRUSEL */
+
 /*EVENTOS*/
 exports.evento= async (req, res) =>{
-   const  resultado = await Evento.find();   // usa el modelo correcto
-   
-      // 2.2- Filtrar imágenes que realmente existan
-      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
-      const imagenes  = resultado 
-        .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
-        .map(doc => ({
+  const  resultado = await Evento.find();  
+  const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
+  const imagenes  = resultado 
+  .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+  .map(doc => ({
           nombre: doc.nombreImagen,
           url   : '/images/eventos/' + doc.nombreImagen,
          fecha: doc.fechaCreacion instanceof Date ? doc.fechaCreacion : new Date(doc.fechaCreacion),
           descripcion:doc.descripcion,
           titulo:doc.titulo,
           id:doc._id.toString()
-        }));
-  
-      // 2.3- Renderizar la vista
-      return res.render('eventosadmin', {
-        
+        }));    
+      return res.render('eventosadmin', {        
         carrusel: imagenes
       });
-
 }
 exports.eliminarevento = async (req, res) => {   
   try {
-    const { id } = req.body;  // viene del input hidden del formulario
-
+    const { id } = req.body;
     if (!id) {
       return res.status(400).send('Nombre de imagen faltante');
     }
-      const documento =await Evento.findOne({ _id: id });        
-      await Evento.deleteOne({ _id: id });     
-      const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'eventos', documento.nombreImagen);
-     
-      if (fss.existsSync(rutaImagen)) {       
+    const documento =await Evento.findOne({ _id: id });        
+    await Evento.deleteOne({ _id: id });     
+    const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'eventos', documento.nombreImagen);     
+    if (fss.existsSync(rutaImagen)) {       
         fss.unlinkSync(rutaImagen);       
-      }  
-       const  resultado = await Evento.find();   // usa el modelo correcto
-   
-      // 2.2- Filtrar imágenes que realmente existan
-      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
-      const imagenes  = resultado 
+    }     
+    const  resultado = await Evento.find();    
+    const dirPublic = path.join(__dirname, '..', 'public', 'images', 'eventos');
+    const imagenes  = resultado 
         .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
         .map(doc => ({
           nombre: doc.nombreImagen,
@@ -447,71 +348,49 @@ exports.eliminarevento = async (req, res) => {
           descripcion:doc.descripcion,
           titulo:doc.titulo,
           id:doc._id.toString()
-        }));
-  
-      // 2.3- Renderizar la vista
-      return res.render('eventosadmin', {
-        
-        carrusel: imagenes
-      });
-    
+        }));  
+     return res.json({existe:1});    
   } catch (error) {
     console.error('Error al eliminar carrusel:', error);
-    return res.status(500).send('Error al eliminar la imagen');
+    return res.json({existe:0});
   }
 };
 exports.registrarevento = async (req, res) => {
   try {
     let { nombreImagen,titulo,descripcion } = req.body;
-    const archivo = req.file;                    // viene de multer
-
+    const archivo = req.file;
     if (!nombreImagen || !archivo) {
       return res.status(400).json({ error: 'Faltan datos' });
-    }
-
-    /* 1. Limpieza y normalización */
+    }  
     nombreImagen = path.basename(nombreImagen.trim());
     const base   = nombreImagen.replace(/\.[^/.]+$/, ''); // sin extensión
     const nombreNormalizado = `${base}.jpg`.toLowerCase();
-
-    /* 2. ¿Existe ya?  (case-insensitive) */
     const existe = await Evento.findOne({
       nombreImagen: { $regex: `^${base}\\.jpg$`, $options: 'i' }
     });
-
     if (existe) {
-      return res.json({ existe: 0 });            // ya está en BD
-    }
-
-    /* 3. Guardar la imagen como JPG */
+      return res.json({ existe: 0 });       
+    }  
     const destinoDir  = path.join(__dirname, '..', 'public', 'images', 'eventos');
-    const destinoPath = path.join(destinoDir, nombreNormalizado);
-
-    // Crea dir si no existe
-    await fs.mkdir(destinoDir, { recursive: true });
-
-    // Convierte a JPG (calidad 80) y guarda
+    const destinoPath = path.join(destinoDir, nombreNormalizado);    
+    await fs.mkdir(destinoDir, { recursive: true });  
     await sharp(archivo.buffer)
       .jpeg({ quality: 80 })
-      .toFile(destinoPath);
-
-    /* 4. Inserta en la base de datos */
+      .toFile(destinoPath);   
     await Evento.create({ nombreImagen: nombreNormalizado, descripcion:descripcion, titulo:titulo,fechaRegistro: new Date()  });
-
-    return res.json({ existe: 1 });              // lo acabamos de guardar
+    return res.json({ existe: 1 });     
   } catch (err) {
     console.error('Error verificarcarrusel:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    return res.json({ existe: 0 });  
   }
 };
 /*FIN EVENTOS*/
+
 /*NOTICIAS*/
 exports.noticia= async (req, res) =>{
-   const  resultado = await Noticia.find();   // usa el modelo correcto
-   
-      // 2.2- Filtrar imágenes que realmente existan
-      const dirPublic = path.join(__dirname, '..', 'public', 'images', 'noticias');
-      const imagenes  = resultado 
+  const  resultado = await Noticia.find();     
+  const dirPublic = path.join(__dirname, '..', 'public', 'images', 'noticias');
+  const imagenes  = resultado 
         .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
         .map(doc => ({
           nombre: doc.nombreImagen,
@@ -520,33 +399,24 @@ exports.noticia= async (req, res) =>{
           descripcion:doc.descripcion,
           titulo:doc.titulo,
           id:doc._id.toString()
-        }));
-  
-      // 2.3- Renderizar la vista
-      return res.render('noticiasadmin', {
-        
-        carrusel: imagenes
-      });
-
+        }));      
+  return res.render('noticiasadmin', {        
+    carrusel: imagenes
+  });
 }
 exports.eliminarnoticia = async (req, res) => {   
   try {
-    const { id } = req.body;  // viene del input hidden del formulario
-
+    const { id } = req.body;
     if (!id) {
       return res.status(400).send('Nombre de imagen faltante');
     }
-      const documento =await Noticia.findOne({ _id: id });       
-      
+      const documento =await Noticia.findOne({ _id: id });      
       await Noticia.deleteOne({ _id: id });     
-      const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'noticias', documento.nombreImagen);
-     
+      const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'noticias', documento.nombreImagen);     
       if (fss.existsSync(rutaImagen)) {       
         fss.unlinkSync(rutaImagen);       
       }  
-       const  resultado = await Noticia.find();   // usa el modelo correcto
-   
-      // 2.2- Filtrar imágenes que realmente existan
+      const  resultado = await Noticia.find();   
       const dirPublic = path.join(__dirname, '..', 'public', 'images', 'noticias');
       const imagenes  = resultado 
         .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
@@ -558,65 +428,44 @@ exports.eliminarnoticia = async (req, res) => {
           titulo:doc.titulo,
           id:doc._id.toString()
         }));
-  
-      // 2.3- Renderizar la vista
-      return res.render('noticiasadmin', {
-        
-        carrusel: imagenes
-      });
-    
+      return res.json({existe:1});
   } catch (error) {
     console.error('Error al eliminar carrusel:', error);
-    return res.status(500).send('Error al eliminar la imagen');
+   return res.json({existe:0});
   }
 };
 exports.registrarnoticia = async (req, res) => {
   try {
     let { nombreImagen,titulo,descripcion } = req.body;
-    const archivo = req.file;                    // viene de multer
-
+    const archivo = req.file;
     if (!nombreImagen || !archivo) {
       return res.status(400).json({ error: 'Faltan datos' });
     }
-
-    /* 1. Limpieza y normalización */
     nombreImagen = path.basename(nombreImagen.trim());
     const base   = nombreImagen.replace(/\.[^/.]+$/, ''); // sin extensión
     const nombreNormalizado = `${base}.jpg`.toLowerCase();
-
-    /* 2. ¿Existe ya?  (case-insensitive) */
     const existe = await Noticia.findOne({
       nombreImagen: { $regex: `^${base}\\.jpg$`, $options: 'i' }
     });
-
     if (existe) {
-      return res.json({ existe: 0 });            // ya está en BD
-    }
-
-    /* 3. Guardar la imagen como JPG */
+      return res.json({ existe: 0 });      
+    }   
     const destinoDir  = path.join(__dirname, '..', 'public', 'images', 'noticias');
     const destinoPath = path.join(destinoDir, nombreNormalizado);
-
-    // Crea dir si no existe
     await fs.mkdir(destinoDir, { recursive: true });
-
-    // Convierte a JPG (calidad 80) y guarda
     await sharp(archivo.buffer)
       .jpeg({ quality: 80 })
-      .toFile(destinoPath);
-
-    /* 4. Inserta en la base de datos */
+      .toFile(destinoPath);   
     await Noticia.create({ nombreImagen: nombreNormalizado, descripcion:descripcion, titulo:titulo,fechaRegistro: new Date()  });
-
-    return res.json({ existe: 1 });              // lo acabamos de guardar
+    return res.json({ existe: 1 });    
   } catch (err) {
     console.error('Error verificarcarrusel:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    return res.json({ existe: 0 });  
   }
 };
 /*FIN NOTICIAS*/
-/*CURSOS*/
 
+/*CURSOS*/
 exports.curso = async (req, res) => {
   const resultado = await GestionActual.find();
 
@@ -649,7 +498,6 @@ exports.curso = async (req, res) => {
 
   return res.render('cursosadmin', { carrusel });
 };
-
 exports.eliminarcurso = async (req, res) => {   
   try {
     const { id } = req.body;
@@ -715,10 +563,6 @@ exports.eliminarcurso = async (req, res) => {
      return res.json({ existe: 0 });
   }
 };
-
-
-
-
 exports.registrarcurso = async (req, res) => {
   try {
     const { titulo, descripcion } = req.body;
@@ -788,5 +632,4 @@ exports.registrarcurso = async (req, res) => {
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
-
 /*FIN CURSOS*/
