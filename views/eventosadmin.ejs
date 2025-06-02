@@ -29,25 +29,13 @@
       <td><%= img.titulo %></td>
       <td><%= img.descripcion %></td>
       <td><img src="<%= img.url %>" style="height:70px"></td>
-    
-
-      <!--  🆕  Columna oculta (solo para inspección, no se muestra) -->
-   
-
       <td>
-        <form method="POST"
-              action="/eventos"
-              class="form-eliminar">
-          <!--  🆕  El id viaja en un input hidden  -->
-          <input style="display: none;"  name="id" value="<%= img.id %>">
-
-          <!--  También lo ponemos en data-id por si lo necesitas en JS  -->
-          <button type="submit"
+          <button 
+          id="eliminarfila"
                   class="carrusel-btn-eliminar"
-                  data-id="<%= img._id %>">
+                  data-id="<%= img.id %>">
             Eliminar
           </button>
-        </form>
       </td>
     </tr>
   <% }) %>

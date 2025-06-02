@@ -22,7 +22,7 @@
       <th>Imagen</th>  
       <th>Imagen</th>  
       <th>Imagen</th>     
-      <th>oculta</th>
+     
       <th>Acciones</th> <!-- Nueva columna -->
     </tr>
   </thead>
@@ -35,22 +35,12 @@
       <td><img src="<%= img.url1 %>" style="height:70px"></td>
       <td><img src="<%= img.url2 %>" style="height:70px"></td>
       <td><img src="<%= img.url3 %>" style="height:70px"></td>
-      <td><%= img.id %></td>
+   
       <td>      
-          <!-- ✅ Botón con data-id -->
-          <button 
-          id="eliminarfila"
-                  class="carrusel-btn-eliminar"
-                  data-id="<%= img.id %>">
-            Eliminar
-          </button>
-       
-        <button 
-        id="modificarfila"
-                class="carrusel-btn-modificar"
-                data-id="<%= img.id %>">
-          Modificar
-        </button>
+        <div id="btneventos">
+          <button id="eliminarfila"  class="carrusel-btn-eliminar"  data-id="<%= img.id %>">  Eliminar  </button>
+          <button id="modificarfila" class="carrusel-btn-modificar" data-id="<%= img.id %>">  Modificar </button>
+        </div>
       </td>
     </tr>
   <% }) %>

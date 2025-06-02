@@ -4,16 +4,6 @@ const passwrd = document.querySelector('#grm-password');
 const btnEnviar = document.querySelector('#btnEnviar');
 const mensajeError = document.querySelector('#mensajeError');
 
-
-////////////////
-
-
-
-
-
-
-
-////////
 btnEnviar.addEventListener('click',()=>{
     
   mensajeError.classList.add('mensajeErrorLimpiar');
@@ -21,7 +11,7 @@ btnEnviar.addEventListener('click',()=>{
     {
        
         const datos={
-            seleccion:seleccion.value,
+            tipo:seleccion.value,
             usuario:usuario.value,
             passwrd:passwrd.value
         }
@@ -33,11 +23,10 @@ btnEnviar.addEventListener('click',()=>{
             body: JSON.stringify(datos)
             })
             .then(response => response.json())
-            .then(data => {
+            .then(data => {                
                 if(data.existe==1)
-                {  
-                          
-                    post(datos);
+                {                            
+                    window.location.href = '/carrusel';
                 }
                 else
                 {
@@ -52,22 +41,3 @@ btnEnviar.addEventListener('click',()=>{
         mensajeError.classList.add('mensajeErrorLimpiar');
     }
 });
-////////////////////////
-function post(data) {
-    // Crear un formulario temporal
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = '/carruselfotos';
-    for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = data[key];
-            form.appendChild(input);
-        }
-    }   
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-}

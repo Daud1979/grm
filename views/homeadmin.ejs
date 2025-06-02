@@ -17,6 +17,7 @@
       <th>Nombre</th>
       <th>Imagen</th>
       <th>Fecha</th>
+      
       <th>Acciones</th> <!-- Nueva columna -->
     </tr>
   </thead>
@@ -27,12 +28,14 @@
         <td><%= img.nombre %></td>
         <td><img src="<%= img.url %>" style="height:70px"></td>
         <td><%= new Date(img.fecha).toLocaleDateString() %></td>
-        <td>
-  <form method="POST" action="/carruselfoto" onsubmit="return confirm('¿Eliminar esta imagen?');">
-    <input type="hidden" name="nombreImagen" value="<%= img.nombre %>">
-    <button type="submit" class="carrusel-btn-eliminar">Eliminar</button>
-   
-  </form>
+      
+        <td>    
+          <button 
+          id="eliminarfila"
+                  class="carrusel-btn-eliminar"
+                  data-id="<%= img.id %>">
+            Eliminar
+          </button>
 </td>
       </tr>
     <% }) %>

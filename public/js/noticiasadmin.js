@@ -1,27 +1,27 @@
 
 const btnSubirimagen = document.querySelector('#btnSubirimagen');
-
 btnSubirimagen.addEventListener('click', () => {
   const titulo = document.querySelector('#titulo');
   const descripcion = document.querySelector('#descripcion');
-  const fileInput = document.querySelector('#imagenFile1');
-  const fileInput2 = document.querySelector('#imagenFile2');
-  const fileInput3 = document.querySelector('#imagenFile3');
-  
+  const nombreInput = document.querySelector('#nombreImagen');
+  const fileInput = document.querySelector('#imagenFile');  
   const archivo = fileInput.files[0];
-  if (titulo.value.trim() !== '' && archivo && titulo.value != '' && descripcion.value!='') {
+ 
+  if (titulo.value.trim() !== '' && archivo && nombreInput.value.trim() !== '' && descripcion.value!='') {
+  
     const datos = new FormData();
     datos.append('nombreImagen', nombreInput.value.trim());
     datos.append('titulo', titulo.value.trim());
     datos.append('descripcion', descripcion.value.trim());
     datos.append('imagen', archivo);  
 
-    fetch('/registrarcurso', {
+    fetch('/registrarnoticia', {
       method: 'POST',
       body: datos // no pongas headers
     })
       .then(response => response.json())
-      .then(data => {       
+      .then(data => {    
+       
          if (data.existe==1)
           {  
            window.location.reload();     
@@ -39,6 +39,47 @@ btnSubirimagen.addEventListener('click', () => {
     Notiflix.Notify.warning('FALTAN DATOS');
   }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabla = document.getElementById('noticiasdatos');
+
+  tabla.addEventListener('click', async (e) => {
+    // Captura el botón presionado
+    
+    if (e.target.id =='eliminarfila')
+    {
+       const id = e.target.dataset.id;
+       
+        const datos={
+            id:id
+           
+        }
+        fetch('/noticias', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.existe==1)
+                {  
+                  window.location.reload();     
+                }
+                else
+                {
+                    Notiflix.Notify.failure('CREDENCIALES INCORRECTAS');
+                    usuario.value=''
+                    passwrd.value=''
+                }
+            })
+    }
+   
+  }
+  );
+});
+
 
 
 

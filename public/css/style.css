@@ -11,8 +11,20 @@
       
     }
     .navbar-brand,  .navbar-toggler-icon {
-      color: var(--primary-black) !important;
-     
+      color: var(--primary-black) !important;     
+    }
+    #btneventos{
+      display: flex;
+      flex-direction: column;
+      align-items: center;            
+    }
+    #btneventos button{
+      margin: 0.2rem;
+      padding: 0.2rem;
+    }
+    #eliminarfila{
+      margin: 0.2rem;
+      padding: 0.2rem;
     }
   .nav-link {
       color: var(--primary-white) !important;
@@ -570,8 +582,9 @@
 .carrusel-formulario {
       border: 1px solid #ccc;
       padding: 20px;
-      width: 300px;
+      width: 500px;
       margin-bottom: 30px;
+      justify-self: center;
     }
 
     .carrusel-input,
@@ -665,6 +678,10 @@
 
 
   @media (max-width: 768px) {
+    .carrusel-formulario{
+      width: 400px;
+    }
+
     .logincontainer{
   padding-top:8rem ;
       
