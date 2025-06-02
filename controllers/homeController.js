@@ -629,6 +629,74 @@ exports.registrarcurso = async (req, res) => {
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+exports.obtenercurso = async (req,res)=>{
+  const id=req.body.id;
+  const resultado = await GestionActual.find({_id:id});
+  
+  return res.json({resultado});
+}
+exports.modificarcurso = async (req, res) => {
+  try {
+    const { titulo, descripcion,id } = req.body;
+
+       /* 2) Función de ayuda para slug y timestamp --------------------------- */
+    const slugify = str =>
+      str
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+    const now  = new Date();
+    const tms  =
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0') +
+      String(now.getMilliseconds()).padStart(3, '0');
+
+    const slug = slugify(titulo);
+
+    /* 3) Carpeta destino --------------------------------------------------- */
+    const destinoDir = path.join(__dirname, '..', 'public', 'images', 'cursoactual');
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    /* 4) Función genérica para procesar y guardar cada imagen -------------- */
+    const procesarImagen = async (file, idx) => {
+      const nombreFinal = `${slug}-${tms}-${idx}.jpg`;
+      const destino     = path.join(destinoDir, nombreFinal);
+
+      await sharp(file.buffer)
+        .jpeg({ quality: 80 })
+        .toFile(destino);
+
+      return nombreFinal; // se guarda solo el nombre
+    };   
+
+    /* 6) Procesar opcionales (idx 2 y 3) ----------------------------------- */
+    const nombreImg2 = req.files.imagen2 && req.files.imagen2[0]
+      ? await procesarImagen(req.files.imagen2[0], 2)
+      : null;
+
+    const nombreImg3 = req.files.imagen3 && req.files.imagen3[0]
+      ? await procesarImagen(req.files.imagen3[0], 3)
+      : null;
+
+    /* 7) Guardar en la BD -------------------------------------------------- */
+
+await GestionActual.findByIdAndUpdate(id, {
+  Curso: titulo,
+  descripcion: descripcion,
+  nombreImagenDos: nombreImg2,
+  nombreImagenTres: nombreImg3,
+  fechaRegistro: now
+});
+
+    return res.json({ existe: 1 });
+  } catch (err) {
+    console.error('Error registrarcurso:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+ 
+};
 /*FIN CURSOS*/
 
 /*PROMOCION*/

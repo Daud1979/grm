@@ -33,4 +33,8 @@ router.post('/registrarnoticia',  upload.single('imagen'), homeController.regist
 router.post('/registrarevento',  upload.single('imagen'), homeController.registrarevento);
 router.post('/registrarcurso',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.registrarcurso);
 router.post('/registrarpromocion',  upload.single('imagen'), homeController.registrarpromocion);
+//OBTENER CURSO
+router.post('/obtenercurso',homeController.obtenercurso); 
+router.post('/modificarcurso',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.modificarcurso);
+
 module.exports = router;

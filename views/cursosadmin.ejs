@@ -26,7 +26,7 @@
       <th>Acciones</th> <!-- Nueva columna -->
     </tr>
   </thead>
-<tbody id="eventodatos">
+<tbody id="cursodatos">
   <% carrusel.forEach((img, i) => { %>
     <tr>
       <td><%= i + 1 %></td>
@@ -38,17 +38,15 @@
    
       <td>      
         <div id="btneventos">
+          <button id="modificarfila" class="carrusel-btn-modificar" data-id="<%= img.id %>">  Modificar </button>          
           <button id="eliminarfila"  class="carrusel-btn-eliminar"  data-id="<%= img.id %>">  Eliminar  </button>
-          <button id="modificarfila" class="carrusel-btn-modificar" data-id="<%= img.id %>">  Modificar </button>
+          
         </div>
       </td>
     </tr>
   <% }) %>
 </tbody>
-
-
 </table>
-
 </div>
 <script src="/js/cursoadmin.js"></script>
 <%- include('./partials/footer') %>
