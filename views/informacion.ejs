@@ -13,13 +13,13 @@
         <p class="sectioncolor">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit incidunt culpa libero deserunt perferendis tenetur ad ipsa recusandae ducimus dignissimos nobis autem soluta officia suscipit labore atque, ab alias harum.</p>
     </section>   
 </div>
-<section  id="sectiongaleria">
-    <div class="container">
+<section class="" id="sectiongaleria">
+    <div class="container ">
       <h2 class="">PLANTEL DE DOCENTES</h2>     
        <div class="image-grid" >
         <% if (imageGridItems && imageGridItems.length > 0) { %>
             <% imageGridItems.forEach(function(item) { %>
-                <div class="grid-item" id="imgdocente">
+                <div class="grid-item" >
                     <img  src="<%= item.imagePath %>" alt="<%= item.title %>">
                     <h3><%= item.title %></h3>
                     <p><%= item.description %></p>

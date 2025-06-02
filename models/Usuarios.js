@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const UsuariosSchema = new mongoose.Schema({
     tipo: {
         type: String,
-        enum: ['administrador', 'docente', 'apoderado'],
+        enum: ['administrador'],
         required: true
     },
     usuario: {

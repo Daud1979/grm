@@ -61,7 +61,7 @@ exports.home = async (req, res) => {
 };
 exports.informacion = async (req, res) => {
   try {
-    const docentes = await Docente.find().lean();
+    const docentes = await Docente.find({estado:1});
 
     // Carpeta donde deben vivir las imágenes de los docentes
     const plantelDir = path.join(__dirname, '..', 'public', 'images', 'plantel');
@@ -203,6 +203,7 @@ exports.verificariniciosesion = async (req, res) => {
           url   : '/images/carrusel/' + doc.nombreImagen,
           fecha : doc.fechaRegistro
         }));
+       
         return res.json({ existe: 1 });
     } else {
       return res.json({ existe: 0 });
@@ -765,3 +766,201 @@ exports.registrarpromocion = async (req, res) => {
   } 
 };
 /*FIN PROMOCION*/
+
+/* DOCENTE*/
+exports.docente = async (req, res) => {
+  const resultado = await Docente.find(); 
+  
+  const dirPublic = path.join(__dirname, '..', 'public', 'images', 'plantel');
+  const imagenes  = resultado 
+  .filter(doc => fss.existsSync(path.join(dirPublic, doc.nombreImagen)))
+  .map(doc => ({
+          nombre:doc.nombre,
+          nombreImagen: doc.nombreImagen,
+          url   : '/images/plantel/' + doc.nombreImagen,        
+          descripcion:doc.descripcion,
+          usuario:doc.usuario,
+          passwrd:doc.passwrd,
+          estado:(doc.estado==1?'Habilitado':'Deshabilitado'),
+          id:doc._id.toString()
+        }));           
+      return res.render('docenteadmin', {        
+        carrusel: imagenes
+      });
+};
+
+exports.eliminardocente = async (req, res) => {   
+ try {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).send('Nombre de imagen faltante');
+    }
+    const documento =await Docente.findOne({ _id: id });        
+    await Docente.deleteOne({ _id: id });     
+    const rutaImagen = path.join(__dirname, '..', 'public', 'images', 'plantel', documento.nombreImagen);     
+    if (fss.existsSync(rutaImagen)) {       
+        fss.unlinkSync(rutaImagen);       
+    }
+           
+    return res.json({existe:1});    
+  } catch (error) {
+    console.error('Error al eliminar carrusel:', error);
+    return res.json({existe:0});
+  }
+};
+
+exports.obtenerdocente = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const docente = await Docente.findById(id); 
+    
+    if (!docente) {
+      return res.status(404).json({ error: 'Docente no encontrado' });
+    }
+
+    // Construir la URL pública de la imagen
+    const imagenURL = docente.nombreImagen 
+      ? `/images/plantel/${docente.nombreImagen}` 
+      : null;
+
+    // Retornar los datos con la ruta de imagen incluida
+    return res.json({
+      resultado: {
+        ...docente.toObject(),  // convierte el documento Mongoose a objeto plano
+        imagenURL
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener el docente:', error);
+    return res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+exports.registrardocente = async (req, res) => {
+  console.log(req.body);
+  try {
+    let { ci, nombre, descripcion, usuario, passwrd } = req.body;
+    const archivo = req.file;
+
+    if (!archivo) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    const existebs = await Docente.findOne({ ci: ci });
+    if (existebs) {
+      return res.json({ existe: 2 }); // ya está en la base de datos
+    }
+
+    // 🔽 Generar nombre de archivo
+    const now = new Date();
+    const hhmmssmmm =
+      String(now.getHours()).padStart(2, '0') +
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0') +
+      String(now.getMilliseconds()).padStart(3, '0');
+
+    const nombreNormalizado = `${ci}-${hhmmssmmm}.jpg`;
+
+    // 🔽 Guardar archivo
+    const destinoDir = path.join(__dirname, '..', 'public', 'images', 'plantel');
+    const destinoPath = path.join(destinoDir, nombreNormalizado);
+    await fs.mkdir(destinoDir, { recursive: true });
+
+    await sharp(archivo.buffer)
+      .jpeg({ quality: 80 })
+      .toFile(destinoPath);
+
+    // 🔽 Guardar en la base de datos
+    await Docente.create({
+      ci,
+      nombre,
+      descripcion,
+      nombreImagen: nombreNormalizado,
+      usuario,
+      passwrd
+    });
+
+    return res.json({ existe: 1 });
+  } catch (err) {
+    console.error('Error verificarcarrusel:', err);
+    return res.json({ existe: 0 });
+  }
+};
+
+
+exports.modificardocente = async (req, res) => {
+  try {
+    const {
+      id,
+      ci,
+      nombre,
+      descripcion,
+      usuario,
+      passwrd,
+      estado,
+      nombreImagen  // nombre anterior
+    } = req.body;
+
+    const docente = await Docente.findById(id);
+    if (!docente) {
+      return res.status(404).json({ error: 'Docente no encontrado' });
+    }
+
+    // Verifica si se subió una nueva imagen
+    let nombreImagenFinal = nombreImagen; // si no hay nueva, se mantiene la anterior
+
+    if (req.files && req.files.imagen && req.files.imagen[0]) {
+      // Eliminar imagen anterior si existe y es diferente
+      if (docente.nombreImagen && docente.nombreImagen !== nombreImagen) {
+        const rutaAnterior = path.join(__dirname, '..', 'public', 'images', 'plantel', docente.nombreImagen);
+        if (fss.existsSync(rutaAnterior)) {
+          fss.unlinkSync(rutaAnterior);
+        }
+      }
+
+      // Generar nombre único a partir del nombre del docente
+      const slugify = str =>
+        str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+      const now = new Date();
+      const tms =
+        String(now.getMinutes()).padStart(2, '0') +
+        String(now.getSeconds()).padStart(2, '0') +
+        String(now.getMilliseconds()).padStart(3, '0');
+
+      const slug = slugify(nombre);
+      const nombreFinal = `${slug}-${tms}.jpg`;
+
+      const destinoDir = path.join(__dirname, '..', 'public', 'images', 'plantel');
+      await fs.mkdir(destinoDir, { recursive: true });
+
+      const destino = path.join(destinoDir, nombreFinal);
+
+      // Procesar y guardar imagen
+      await sharp(req.files.imagen[0].buffer)
+        .jpeg({ quality: 80 })
+        .toFile(destino);
+
+      nombreImagenFinal = nombreFinal;
+    }
+
+    // Actualizar en base de datos
+    await Docente.findByIdAndUpdate(id, {
+      ci,
+      nombre,
+      descripcion,
+      nombreImagen: nombreImagenFinal,
+      usuario,
+      passwrd,
+      estado,
+    });
+
+    return res.json({ existe: 1 });
+  } catch (err) {
+    console.error('Error al modificar docente:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+
+/*FIN DOCENTE*/

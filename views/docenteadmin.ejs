@@ -1,0 +1,83 @@
+<%- include('./partials/headeradmin') %>
+<div class="container containercarrusel">
+      
+ <div class="container py-4">
+
+    <!-- === Formulario nuevo docente ==================================== -->
+    <h3 class="mb-3">Nuevo Docente</h3>
+    <div class="row g-3 shadow-sm p-3 bg-white rounded-4">
+      <div class="col-md-3">
+        <label class="form-label">Carnet Identidad <span class="text-danger">*</span></label>
+        <input type="text" id="ci" name="ci" class="form-control form-control-sm" required>
+      </div>
+      <div class="col-md-9">
+        <label class="form-label">Nombre <span class="text-danger">*</span></label>
+        <input type="text" id="nombre" name="nombre" class="form-control form-control-sm" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Descripción <span class="text-danger">*</span></label>
+        <textarea name="descripcion" id="descripcion" rows="2" class="form-control form-control-sm" required></textarea>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Imagen (Foto)</label>
+        <input type="file" name="imagen" id="file" accept="image/*" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-6"></div>
+      <div class="col-md-2">
+        <label class="form-label">Usuario</label>
+        <input type="text" id="usuario" name="usuario" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Contraseña</label>
+        <input type="text" id="passwrd" name="passwrd" class="form-control form-control-sm">
+      </div>      
+      <div class="col-12">
+        <button class="btn btn-primary btn-sm" id="btnRegistrar">Registrar</button>
+      </div>
+    </div>
+
+    <!-- === Tabla listado docentes ====================================== -->
+    <hr class="my-4">
+    <h3 class="mb-3">Listado de Docentes</h3>
+<div class="mb-3 col-6">
+  <input type="text" id="buscadorDocentes" class="form-control form-control-sm" placeholder="Buscar docente...">
+</div>
+    <div class="table-responsive">
+      <table class="carrusel-tabla ">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Imagen</th>
+      <th>Nombre</th>
+      <th>Descripcion</th>
+      <th>Usuario</th>
+      <th>Contraseña</th>
+      <th>Estado</th>
+      <th>Acciones</th> <!-- Nueva columna -->
+    </tr>
+  </thead>
+  <tbody id="docentedatos">
+    <% carrusel.forEach((img, i) => { %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><img src="<%= img.url %>" style="height:70px"></td>
+        <td style="text-align: start;"><%= img.nombre %></td>
+        <td style="text-align: start;"><%= img.descripcion %></td>
+        <td style="text-align: start;"><%= img.usuario %></td>
+        <td style="text-align: start;"><%= img.passwrd %></td>
+        <td style="text-align: start;"><%= img.estado %></td>
+        <td> 
+          <div id="btneventos">
+            <button id="modificarfila" class="carrusel-btn-modificar" data-id="<%= img.id %>">  Modificar </button>          
+            <button id="eliminarfila"  class="carrusel-btn-eliminar"  data-id="<%= img.id %>">  Eliminar  </button>
+          </div>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+  </table>
+    </div>
+  </div>
+</div>
+<script src="/js/docenteadmin.js"></script>
+<%- include('./partials/footer') %>

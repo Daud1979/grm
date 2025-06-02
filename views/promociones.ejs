@@ -1,7 +1,7 @@
 <%- include('./partials/header') %>
 <div class="container containermisionvision">
      <h2 class="h2promocionactual">Promociones</h2>
-<section class="promocionactual">
+<section class="promocionactual ">
   <div class="grid-promocionactual">
     <% imageGridItems.forEach((item, index) => { %>
       <div class="card-promocion" onclick="abrirModalPromocion('<%= item.imagePathUno %>', '<%= item.description.replace(/'/g, "\\'") %>')">

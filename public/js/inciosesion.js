@@ -25,8 +25,9 @@ btnEnviar.addEventListener('click',()=>{
             .then(response => response.json())
             .then(data => {                
                 if(data.existe==1)
-                {                            
-                    window.location.href = '/carrusel';
+                {               
+                             
+                    window.location.href = '/GRMCarrusel';
                 }
                 else
                 {

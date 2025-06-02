@@ -689,14 +689,21 @@
      
     }
     .imagen-itemactual { flex: 1 1 90%; }
-    .image-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Podría ser 2 columnas */
-    gap: 15px;
-    padding: 15px;
-  }
-  .grid-item img {
-      height: 180px; /* Ligeramente más bajas en móviles */
-  }  
+
+  .image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Siempre 3 columnas */
+  gap: 20px;
+  justify-items: center;
+  align-items: start;
+}
+
+.grid-item {
+  width: 100%;
+  max-width: 300px;  /* evita que las imágenes se estiren mucho */
+  text-align: center;
+ 
+}  
     .gallery-item {
         width: 250px;
         height: 250px;
@@ -722,6 +729,9 @@
     .containermisionvision{
       padding-top: 10rem;
     }
+   .acomodar{
+    width: 100%;
+   }
   .logo {
   position: relative;
   margin-left: 1rem;   /* lo pone al lado izquierdo */
