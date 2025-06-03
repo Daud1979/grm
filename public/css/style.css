@@ -547,14 +547,14 @@
     }
 
     .grm-btn-login {
-      background: rgb(226, 114, 114);
+      background: rgb(5, 196, 221);
       border: none;
       width: 100%;
       transition: background 0.25s;
     }
 
     .grm-btn-login:hover {
-      background: rgb(114, 113, 113);
+      background: rgb(141, 5, 5);
     }
 
     .grm-title {
@@ -619,10 +619,34 @@
   padding-bottom: 3rem;
  
 }
-    .carrusel-imagen {
+.carrusel-imagen {
       height: 60px;
     }
-    .carrusel-btn-eliminar {
+  .modal-mia{
+    background-color: #a03004; /* rojo intenso */
+    color: white; 
+    }
+     .carrusel-btn-incidencia {
+  background-color: #a03004; /* rojo intenso */
+  color: white;
+  border: none;
+  width: 90px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.carrusel-btn-incidencia:hover {
+  background-color: #d66a49; /* rojo más oscuro al pasar el mouse */
+  color: black;
+}
+
+#btnIncidencia{
+  background-color: #a03004; /* rojo intenso */
+  color: white;
+}
+  .carrusel-btn-eliminar {
   background-color: #e74c3c; /* rojo intenso */
   color: white;
   border: none;

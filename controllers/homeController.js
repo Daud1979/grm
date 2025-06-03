@@ -13,8 +13,9 @@ const Curso=require('../models/Curso');
 const sharp = require('sharp');
 const Apoderado = require('../models/Apoderado');
 const Alumno = require('../models/Alumno');
-
+const Incidencia = require('../models/Incidencia');
 /*PANTALLA INICIAL */
+
 exports.home = async (req, res) => {
   const carouselPath = path.join(publicPath, 'images', 'carrusel');
   let carouselImages = [];
@@ -187,8 +188,10 @@ exports.iniciosesion = async (req, res) =>{
 }
 exports.verificariniciosesion = async (req, res) => {
   const { tipo, usuario, passwrd } = req.body;
-  
-   try {
+   
+   if (tipo == 'administrador')
+   {
+    try {
     const usuarioEncontrado = await Usuarios.findOne({
        tipo: tipo,
        usuario:usuario,
@@ -211,9 +214,44 @@ exports.verificariniciosesion = async (req, res) => {
     } else {
       return res.json({ existe: 0 });
     }
-  } catch (error) {
-    console.error('Error al verificar el inicio de sesión:', error);
-    return res.status(500).json({ error: 'Error en el servidor' });
+    } 
+    catch (error) 
+    {
+      console.error('Error al verificar el inicio de sesión:', error);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }  
+  }
+  else if (tipo =='docente')
+  {
+     try {
+    const usuarioEncontrado = await Docente.findOne({
+       usuario:usuario,
+       passwrd: passwrd, 
+       estado:1
+    });
+   
+    if (usuarioEncontrado) {     
+      req.session.idDocente = usuarioEncontrado._id;       
+      return res.json({ existe: 2, usuario:usuarioEncontrado });
+    } else {
+      return res.json({ existe: 0 });
+    }
+    } 
+    catch (error) 
+    {
+      console.error('Error al verificar el inicio de sesión:', error);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    } 
+
+  }
+  else if(tipo=='tutor')
+  {
+console.log(tipo);
+  }
+  else
+  {
+      console.error('Error al verificar el inicio de sesión:', error);
+      return res.status(500).json({ error: 'Error en el servidor' });
   }
 };
 /*FIN INICIO SESION */
@@ -1001,95 +1039,6 @@ exports.registrarcurso=async(req,res)=>{
   }
   
 }
-
-// exports.registraralumno = async (req, res) => {
-//   try {
-//     const body = req.body;
-
-//     // Convertimos el body plano en arrays de objetos
-//     const apoderados = [];
-//     const alumnos = [];
-
-//     // Parsear apoderados
-//     Object.keys(body).forEach(key => {
-//       const match = key.match(/^apoderados\[(\d+)\]\[(\w+)\]$/);
-//       if (match) {
-//         const index = parseInt(match[1]);
-//         const field = match[2];
-//         apoderados[index] = apoderados[index] || {};
-//         apoderados[index][field] = body[key];
-//       }
-//     });
-
-//     // Parsear alumnos
-//     Object.keys(body).forEach(key => {
-//       const match = key.match(/^alumnos\[(\d+)\]\[(\w+)\]$/);
-//       if (match) {
-//         const index = parseInt(match[1]);
-//         const field = match[2];
-//         alumnos[index] = alumnos[index] || {};
-//         alumnos[index][field] = body[key];
-//       }
-//     });
-
-//     // Filtrar datos vacíos (por ejemplo, apoderado 2 sin CI)
-//     const apoderadosFiltrados = apoderados.filter(a => a && a.ci);
-//     const alumnosFiltrados = alumnos.filter(a => a && a.ci_alumno);
-
-//     // 1. Crear los alumnos
-//     const alumnoIds = [];
-//     for (const alumnoData of alumnosFiltrados) {
-//       let alumno = await Alumno.findOne({ ci_alumno: alumnoData.ci_alumno });
-
-//       if (!alumno) {
-//         alumno = new Alumno({
-//           ci_alumno: alumnoData.ci_alumno,
-//           nombre: alumnoData.nombre,
-//           curso: alumnoData.curso
-//         });
-//         await alumno.save();
-//         console.log("Alumno guardado:", alumno.ci_alumno);
-//       }
-
-//       alumnoIds.push(alumno._id);
-//     }
-
-//     // 2. Crear los apoderados
-//     for (const apoderadoData of apoderadosFiltrados) {
-//       let apoderado = await Apoderado.findOne({ ci: apoderadoData.ci });
-
-//       if (!apoderado) {
-//         apoderado = new Apoderado({
-//           ci: apoderadoData.ci,
-//           nombre: apoderadoData.nombre,
-//           apellidos: apoderadoData.apellidos,
-//           hijos: alumnoIds
-//         });
-//       } else {
-//         apoderado.hijos = [...new Set([...apoderado.hijos, ...alumnoIds])];
-//       }
-
-//       await apoderado.save();
-//       console.log("Apoderado guardado:", apoderado.ci);
-
-//       // Asociar apoderado con alumnos
-//       for (const alumnoId of alumnoIds) {
-//         const alumno = await Alumno.findById(alumnoId);
-//         if (!alumno.apoderados.includes(apoderado._id)) {
-//           alumno.apoderados.push(apoderado._id);
-//           await alumno.save();
-//         }
-//       }
-//     }
-
-//     return res.redirect('/GRMEstudiante');
-
-//   } catch (error) {
-//     console.error("Error en registro:", error);
-//     return res.status(500).send("Ocurrió un error al registrar los datos.");
-//   }
-// };
-
 exports.registraralumno = async (req, res) => {
   try {
     const body = req.body;
@@ -1186,12 +1135,10 @@ exports.registraralumno = async (req, res) => {
     return res.status(500).send("Ocurrió un error al registrar los datos.");
   }
 };
-
 exports.eliminaralumno = async (req, res) => {
   try {
     const { id } = req.body;
-    
-    
+       
     const alumno = await Alumno.findById(id).populate('apoderados');
     if (!alumno) return res.status(404).json({ mensaje: 'Alumno no encontrado' });
 
@@ -1225,3 +1172,53 @@ exports.eliminaralumno = async (req, res) => {
     return res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 };
+/*DOCENTES*/
+exports.acciones =async (req,res)=>{
+  const usuario=req.body; 
+  const id =req.body._id;
+ const alumno = await Alumno.find()
+      .populate('apoderados') // trae los datos de los apoderados relacionados
+      .lean(); // para que sea más rápido y compatible con la vista
+  const incidencias =await Incidencia.find({estado:0,docente: id }).populate('alumno').lean();
+
+  res.render('homedocente',{usuario, alumno,incidencias});
+}
+exports.registrarincidencia =async (req,res)=>{
+ 
+   try {
+    const { titulo, motivo, acciones, fecha, id, idpr } = req.body;
+
+    const nueva = new Incidencia({
+      titulo,
+      motivo,
+      acciones,
+      fecha,
+      alumno: id,
+      docente: idpr
+    });
+    await nueva.save();
+   res.json({existe:1});
+  } catch (error) {
+    console.error('Error al guardar incidencia:', error);
+    res.json({existe:0});
+  }
+
+}
+
+exports.eliminarincidencia = async(req,res)=>{
+  
+  const {id} = req.body;
+  await Incidencia.deleteOne({ _id: id });    
+   return res.json({existe:1});
+}
+
+
+exports.archivo = async(req,res)=>{  
+  const usuario = Docente.findOne({_id:req.session.idDocente});
+ const alumno = await Alumno.find()
+      .populate('apoderados') // trae los datos de los apoderados relacionados
+      .lean(); // para que sea más rápido y compatible con la vista
+  const incidencias =await Incidencia.find({estado:1,docente: req.session.idDocente }).populate('alumno').lean();
+
+res.render('archivodocente',{usuario, incidencias });
+}

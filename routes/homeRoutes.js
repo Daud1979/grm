@@ -46,4 +46,8 @@ router.post('/modificardocente',  upload.single('imagen') ,  homeController.modi
 router.post('/registrarcurso',homeController.registrarcurso);
 router.post('/registraralumno',homeController.registraralumno);
 router.post('/eliminaralumno',homeController.eliminaralumno);
+router.post('/acciones', homeController.acciones);//es para docente
+router.post('/registrarincidencia', homeController.registrarincidencia);
+router.post('/eliminarincidencia',homeController.eliminarincidencia);
+router.get('/incidenciasarchivadas',homeController.archivo);
 module.exports = router;

@@ -1,0 +1,50 @@
+<%- include('./partials/headerdocente') %>
+ <div class="container containercarrusel">
+  <h2 style="text-align: center;">LISTA DE ALUMNOS DEL ESTABLECIMIENTO</h2>
+ <p><strong>Carnet Identidad:</strong> <%= usuario.ci %></p>
+ <p><strong>Nombre:</strong> <%= usuario.nombre %></p>
+<div style="margin-bottom: 1rem;">
+  <input type="text" id="buscadorIncidencia" placeholder="Buscar por nombre, CI o curso..." style="width: 50%; padding: 0.2rem 0.5rem; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaIncidencias">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Alumno</th>
+        <th>Título</th>
+        <th>Motivo</th>
+        <th>Acciones</th>
+        <th>Fecha</th>        
+        <th style="text-align: center;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="incidenciadatos">
+      <% incidencias.forEach((incidencia, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= incidencia.alumno?.nombre || "Sin nombre" %></td>
+          <td><%= incidencia.titulo %></td>
+          <td><%= incidencia.motivo %></td>
+          <td><%= incidencia.acciones %></td>
+          <td><%= new Date(incidencia.fecha).toLocaleDateString() %></td>
+         <td style="text-align: center;">
+          <button 
+          id="eliminarfila"
+                  class="carrusel-btn-eliminar"
+                  data-id="<%= incidencia._id %>">
+            Eliminar
+          </button>
+      </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<%- include('./partials/footer') %>
+  
+<script src="/js/archivodocente.js"></script>
+

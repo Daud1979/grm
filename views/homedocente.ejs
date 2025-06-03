@@ -1,0 +1,163 @@
+<%- include('./partials/headerdocente') %>
+ <div class="container containercarrusel">
+  <h2 style="text-align: center;">LISTA DE ALUMNOS DEL ESTABLECIMIENTO</h2>
+ <p><strong>Carnet Identidad:</strong> <%= usuario.ci %></p>
+ <p><strong>Nombre:</strong> <%= usuario.nombre %></p>
+<h3 style="padding-top: 1rem;">Lista de Estudiantes y Apoderados</h3>
+<div style="margin-bottom: 1rem; padding: 0 ; ">
+  <input type="text" id="buscadorAlumnos" placeholder="Buscar por nombre, CI o curso..." style="width: 50%; padding: 0.2rem 0.5rem; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaAlumnos">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>CI Alumno</th>
+        <th>Nombre</th>
+        <th>Curso</th>
+        <th>Apoderados</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="alumnosapoderadodatos">
+      <% alumno.forEach((alumno, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= alumno.ci_alumno %></td>
+          <td><%= alumno.nombre %></td>
+          <td><%= alumno.curso %></td>
+          <td>
+            <ul style="margin: 0; padding-left: 1em;">
+              <% alumno.apoderados.forEach(apo => { %>
+                <li><%= apo.nombre.trim() %> <%= apo.apellidos.trim() %> (CI: <%= apo.ci.trim() %>)</li>
+              <% }) %>
+            </ul>
+          </td>
+          <td style="text-align: center;">
+            <button 
+            id="crear incidencia"
+              class="carrusel-btn-incidencia"
+                  class="btn btn-danger btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#llamadaModal"
+                  data-ci="<%= alumno.ci %>"
+                  data-nombre="<%= alumno.nombre %>"
+                  data-curso="<%= alumno.curso %>"
+                  data-id="<%= alumno._id %>">
+              Crear Incidencia
+            </button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<!--1-->
+<div class="modal fade" id="llamadaModal" tabindex="-1" aria-labelledby="llamadaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modal-mia text-white">
+        <h5 class="modal-title" id="llamadaModalLabel">REGISTRAR NUEVA INCIDENCIA</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <input type="text" id="idpr" hidden name="nombrepr" value="<%= usuario._id %>" class="form-control" readonly>
+      </div>
+
+      <form action="/llamada-atencion" method="POST" class="needs-validation" novalidate>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row mb-1">
+              <div class="col-12">
+                <label for="nombre" class="form-label">Alumno</label>
+                <input type="text" hidden id="id" name="nombre" class="form-control" readonly disabled>                
+                <input type="text" id="nombre" name="nombre" class="form-control" disabled readonly>
+              </div>
+            </div>
+            <div class="row mb-1">
+              <div class="col-7 col-md-3">
+                <label for="nombre" class="form-label">Curso</label>             
+                <input type="text" id="curso" name="curso" class="form-control" readonly disabled>
+              </div>
+            </div>
+            <div class="row mb-1">
+              <div class="col-12">
+                <label for="nombre" class="form-label">Titulo</label>             
+                <input type="text" id="titulo" name="titulo" class="form-control">
+              </div>
+            </div>
+            <div class="row mb-1">
+              <div class="col-12">
+                <label for="motivo" class="form-label">Motivo de Incidencia</label>
+                <textarea id="motivo" name="motivo" class="form-control" rows="3" required></textarea>
+              </div>
+            </div>
+
+            <div class="row mb-1">
+              <div class="col-12">
+                <label for="acciones" class="form-label">Acciones correctivas</label>
+                <textarea id="acciones" name="acciones" class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="row mb-1">
+              <div class="col-7 col-md-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" id="fecha" name="fecha" class="form-control" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer justify-content-between">
+          <button type="button" id="btnIncidencia" class="btn  btn-sm">Guardar Llamada de Atención</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--aqui 1-->
+<div style="margin-bottom: 1rem;">
+  <input type="text" id="buscadorIncidencia" placeholder="Buscar por nombre, CI o curso..." style="width: 50%; padding: 0.2rem 0.5rem; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaIncidencias">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Alumno</th>
+        <th>Título</th>
+        <th>Motivo</th>
+        <th>Acciones</th>
+        <th>Fecha</th>        
+        <th style="text-align: center;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="incidenciadatos">
+      <% incidencias.forEach((incidencia, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= incidencia.alumno?.nombre || "Sin nombre" %></td>
+          <td><%= incidencia.titulo %></td>
+          <td><%= incidencia.motivo %></td>
+          <td><%= incidencia.acciones %></td>
+          <td><%= new Date(incidencia.fecha).toLocaleDateString() %></td>
+         <td style="text-align: center;">
+          <button 
+          id="eliminarfila"
+                  class="carrusel-btn-eliminar"
+                  data-id="<%= incidencia._id %>">
+            Eliminar
+          </button>
+      </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<%- include('./partials/footer') %>
+  
+<script src="/js/homedocente.js"></script>
+
