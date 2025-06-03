@@ -78,35 +78,53 @@
    <button type="submit" class="est-btn">Guardar registro</button>
 </form>
 <!--AQUI FORMULARIO-->
-<h3>Listado de Estudiantes y Apoderados</h3>
-<table class="carrusel-tabla">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>CI Alumno</th>
-      <th>Nombre</th>
-      <th>Curso</th>
-      <th>Apoderados</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% alumnos.forEach((alumno, index) => { %>
+<h3 style="padding-top: 1rem;">Lista de Estudiantes y Apoderados</h3>
+
+<!-- 🔍 Buscador -->
+<div style="margin-bottom: 1rem; padding: 0 ; ">
+  <input type="text" id="buscadorAlumnos" placeholder="Buscar por nombre, CI o curso..." style="width: 50%; padding: 0.2rem 0.5rem; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaAlumnos">
+    <thead>
       <tr>
-        <td><%= index + 1 %></td>
-        <td><%= alumno.ci_alumno %></td>
-        <td><%= alumno.nombre %></td>
-        <td><%= alumno.curso %></td>
-        <td>
-          <ul>
-            <% alumno.apoderados.forEach(apo => { %>
-              <li><%= apo.nombre.trim() %> <%= apo.apellidos.trim() %> (CI: <%= apo.ci.trim() %>)</li>
-            <% }) %>
-          </ul>
-        </td>
+        <th>#</th>
+        <th>CI Alumno</th>
+        <th>Nombre</th>
+        <th>Curso</th>
+        <th>Apoderados</th>
+        <th>Acciones</th>
       </tr>
-    <% }) %>
-  </tbody>
-</table>
+    </thead>
+    <tbody id="alumnosapoderadodatos">
+      <% alumnos.forEach((alumno, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= alumno.ci_alumno %></td>
+          <td><%= alumno.nombre %></td>
+          <td><%= alumno.curso %></td>
+          <td>
+            <ul style="margin: 0; padding-left: 1em;">
+              <% alumno.apoderados.forEach(apo => { %>
+                <li><%= apo.nombre.trim() %> <%= apo.apellidos.trim() %> (CI: <%= apo.ci.trim() %>)</li>
+              <% }) %>
+            </ul>
+          </td>
+          <td style="text-align: center;">
+            <button 
+            id="eliminarfila"
+              class="carrusel-btn-eliminar"
+              data-id="<%= alumno._id %>">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
 
 <!--FIN FORMULARIO-->
 <!--modal-->

@@ -104,8 +104,50 @@ document.addEventListener('click', function (e) {
   }
 });
 
-/*PARA EL REGISTRO*/
+const input = document.getElementById('buscadorAlumnos');
+  const tabla = document.getElementById('tablaAlumnos').getElementsByTagName('tbody')[0];
 
+  input.addEventListener('input', () => {
+    const filtro = input.value.toLowerCase();
+    const filas = tabla.getElementsByTagName('tr');
+
+    Array.from(filas).forEach(fila => {
+      const texto = fila.innerText.toLowerCase();
+      fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+  });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabla = document.getElementById('alumnosapoderadodatos');
+   
+  tabla.addEventListener('click', async (e) => {
+    // Captura el botón presionado
+   
+    if (e.target.id =='eliminarfila')
+    {     
+       const id = e.target.dataset.id;       
+       console.log(id);
+        const datos={
+          id:id           
+        }        
+        fetch('/eliminaralumno', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {             
+                
+                  window.location.reload();     
+          
+            })
+    }
+ 
+  });  
+});
 
 
 

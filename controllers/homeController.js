@@ -976,7 +976,7 @@ exports.estudiante = async (req, res) => {
     const alumnos = await Alumno.find()
       .populate('apoderados') // trae los datos de los apoderados relacionados
       .lean(); // para que sea más rápido y compatible con la vista
-console.log(alumnos);
+
     res.render('estudiantesadmin', { carrusel, alumnos });
   } catch (error) {
     console.error("Error al cargar estudiantes:", error);
@@ -1187,3 +1187,41 @@ exports.registraralumno = async (req, res) => {
   }
 };
 
+exports.eliminaralumno = async (req, res) => {
+  try {
+    const { id } = req.body;
+    
+    
+    const alumno = await Alumno.findById(id).populate('apoderados');
+    if (!alumno) return res.status(404).json({ mensaje: 'Alumno no encontrado' });
+
+   
+    const apoderadoIds = alumno.apoderados.map(ap => ap._id);
+
+    // 3. Eliminar al alumno
+    await Alumno.findByIdAndDelete(id);
+
+    
+    for (const apoderadoId of apoderadoIds) {
+      const apoderado = await Apoderado.findById(apoderadoId);
+
+      if (!apoderado) continue;
+      
+      apoderado.hijos = apoderado.hijos.filter(hijoId => hijoId.toString() !== id);
+
+      if (apoderado.hijos.length === 0) {
+        
+        await Apoderado.findByIdAndDelete(apoderadoId);
+      } else {
+        
+        await apoderado.save();
+      }
+    }
+
+    return res.json({exito:1 });
+
+  } catch (error) {
+    console.error('Error al eliminar alumno:', error);
+    return res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+};

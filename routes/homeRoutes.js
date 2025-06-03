@@ -45,4 +45,5 @@ router.post('/modificardocente',  upload.single('imagen') ,  homeController.modi
 //GESTION CURSO
 router.post('/registrarcurso',homeController.registrarcurso);
 router.post('/registraralumno',homeController.registraralumno);
+router.post('/eliminaralumno',homeController.eliminaralumno);
 module.exports = router;

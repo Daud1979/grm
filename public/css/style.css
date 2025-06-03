@@ -845,7 +845,32 @@ input[type="text"] {
 
 
 
+/**/
+.tabla-responsive {
+  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 1rem;
+}
 
+.tabla-estudiantes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px;
+}
+
+.tabla-estudiantes th, .tabla-estudiantes td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.tabla-estudiantes th {
+  background-color: #f0f0f0;
+}
+
+
+/**/
 
 
 
@@ -860,6 +885,13 @@ input[type="text"] {
 
 
   @media (max-width: 768px) {
+     .tabla-estudiantes {
+    font-size: 12px;
+  }
+
+  .tabla-estudiantes th, .tabla-estudiantes td {
+    padding: 6px 8px;
+  }
     .carrusel-formulario{
       width: 400px;
     }
