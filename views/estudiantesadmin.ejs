@@ -1,0 +1,124 @@
+<%- include('./partials/headeradmin') %>
+<div class="container containercarrusel">
+<h1 class="est-titulo">Registro de Apoderados y Alumnos</h1>
+ <div class="est-boton-agregar-curso">
+  <button type="button" class="est-btn" id="est-btn-agregar-curso" data-bs-toggle="modal" data-bs-target="#modalCurso">Añadir Nuevo Curso</button>
+</div>
+<form action="/" method="POST" id="est-formulario-registro">
+
+  <!-- APODERADO 1 -->
+  <fieldset class="est-fieldset">
+    <legend class="est-legend">Apoderado 1 <small>(obligatorio)</small></legend>
+    <div class="est-grid-3">
+      <div class="est-ci">
+        <label for="est-ci1">CI</label>
+        <input type="text"  id="est-ci1" name="apoderados[0][ci]" required>
+      </div>
+      <div>
+        <label for="est-nombre1">Nombre</label>
+        <input type="text" id="est-nombre1" name="apoderados[0][nombre]" required>
+      </div>
+      <div>
+        <label for="est-apellidos1">Apellidos</label>
+        <input type="text" id="est-apellidos1" name="apoderados[0][apellidos]" required>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- APODERADO 2 -->
+  <fieldset class="est-fieldset">
+    <legend class="est-legend">Apoderado 2 <small>(opcional)</small></legend>
+    <div class="est-grid-3">
+      <div class="est-ci">
+        <label for="est-ci2">CI</label>
+        <input type="text"  id="est-ci2" name="apoderados[1][ci]">
+      </div>
+      <div>
+        <label for="est-nombre2">Nombre</label>
+        <input type="text" id="est-nombre2" name="apoderados[1][nombre]">
+      </div>
+      <div>
+        <label for="est-apellidos2">Apellidos</label>
+        <input type="text" id="est-apellidos2" name="apoderados[1][apellidos]">
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ALUMNOS -->
+<fieldset class="est-fieldset">
+  <legend class="est-legend">Alumnos a cargo</legend>
+
+  <div id="est-alumnos-contenedor">
+    <div class="est-alumno">
+      <div >
+        <label>CI Alumno</label>
+        <input type="text"  name="alumnos[0][ci_alumno]" required>
+      </div>
+      <div>
+        <label>Nombre</label>
+        <input type="text" name="alumnos[0][nombre]" required>
+      </div>
+      <div>
+        <label>Curso</label>
+         <select class="select selectalumno" name="alumnos[0][curso]" required>        
+          <% carrusel.forEach((img) => { %>
+              <option value="" disabled selected>Seleccione un curso</option>
+            <option value="<%= img.curso %>"><%= img.curso %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+  </div>
+ <div class="est-boton-agregar">
+  <button type="button" class="est-btn" id="est-btn-agregar-alumno">Añadir Alumno</button>
+</div>
+</fieldset>
+  <button type="submit" class="est-btn">Guardar registro</button>
+</form>
+<!--modal-->
+<!-- Modal Bootstrap: Añadir Nuevo Curso -->
+<!-- Modal -->
+<div class="modal fade" id="modalCurso" tabindex="-1" aria-labelledby="modalCursoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm modal-dialog-scrollable custom-small"> <!-- <-- modal pequeño -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCursoLabel">Gestión de Cursos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex gap-2 mb-3">
+          <input type="text" id="nuevo-curso-input" class="form-control form-control-sm" placeholder="Nuevo curso">
+          <button class="btn btn-primary btn-sm" id="btn-agregar-curso-tabla">Registrar</button>
+        </div>
+        <div class="table-responsive">
+          <table id="tabla" class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th style="width: 10px;">Nº</th>
+                <th style="width: 400px;">Curso</th>
+              
+              </tr>
+            </thead>
+            <tbody id="tabla-cursos-body">           
+              <% carrusel.forEach((img, i) => { %>
+              <tr>
+                <td><%= i + 1 %></td>
+                    <td><%= img.curso %></td>
+               
+              </tr>
+              <% }) %>
+            </tbody>
+           
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!--fin modal-->
+
+</div>
+<script>const cursosGlobal = <%- JSON.stringify(carrusel.map(c => c.curso)) %>;</script>
+<script src="/js/estudianteadmin.js"></script>
+<%- include('./partials/footer') %>

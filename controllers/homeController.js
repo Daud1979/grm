@@ -9,6 +9,7 @@ const GestionActual = require('../models/GestionActual');
 const Promociones = require('../models/Promociones');
 const Usuarios=require('../models/Usuarios');
 const Carrusels=require('../models/Carrusel');
+const Curso=require('../models/Curso');
 const sharp = require('sharp');
 /*PANTALLA INICIAL */
 exports.home = async (req, res) => {
@@ -74,7 +75,7 @@ exports.informacion = async (req, res) => {
         if (docente.nombreImagen && docente.nombreImagen.trim() !== '') {
           const absPath = path.join(plantelDir, docente.nombreImagen);
 src = `/images/plantel/${docente.nombreImagen}`;
-         console.log(src);
+       
         }
 
         return {
@@ -136,7 +137,7 @@ exports.cursoactual = async (req, res) => {
         };
       })
     );
-    console.log(imageGridItems)
+  
     res.render('cursoactual', { imageGridItems });
 
   } catch (error) {
@@ -167,8 +168,7 @@ exports.promociones = async (req, res) => {
          
         };
       })
-    );
-    console.log(imageGridItems);
+    );    
     res.render('promociones', { imageGridItems });
 
   } catch (error) {
@@ -962,5 +962,27 @@ exports.modificardocente = async (req, res) => {
   }
 };
 
-
 /*FIN DOCENTE*/
+
+/*ESTUDIANTES */
+exports.estudiante= async (req, res) =>{
+  carrusel = await Curso.find();   
+  res.render('estudiantesadmin',{carrusel});
+}
+/*FIN ESTUDIANTE */
+
+exports.registrarcurso=async(req,res)=>{
+  const {curso}=req.body;
+  const resultado =await Curso.findOne({curso:curso.toUpperCase()});
+  console.log(resultado);
+  if (!resultado)
+  {
+    await Curso.create({curso:curso.toUpperCase()});
+    carrusels = await Curso.find();    
+    return  res.json({existe:1,carrusel:carrusels});
+  }
+  else{
+    return res.json({existe:0,carrusel:''});
+  }
+  
+}

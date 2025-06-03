@@ -22,6 +22,7 @@ router.get('/GRMNoticia',homeController.noticia);
 router.get('/GRMCurso',homeController.curso);
 router.get('/GRMPromociones',homeController.promocion);
 router.get('/GRMDocente',homeController.docente);
+router.get('/GRMEstudiante',homeController.estudiante);
 //ELIMINAR
 router.post('/carrusels',homeController.eliminarcarrusel); 
 router.post('/noticias',homeController.eliminarnoticia);
@@ -41,4 +42,6 @@ router.post('/obtenercurso',homeController.obtenercurso);
 router.post('/obtenerdocente',homeController.obtenerdocente); 
 router.post('/modificarcurso',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.modificarcurso);
 router.post('/modificardocente',  upload.single('imagen') ,  homeController.modificardocente);
+//GESTION CURSO
+router.post('/registrarcurso',homeController.registrarcurso);
 module.exports = router;
