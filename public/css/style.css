@@ -695,7 +695,10 @@ label {
   font-size: 0.9rem;
   margin-bottom: 0.2rem;
 }
-
+.cialumnos{
+  background: red;
+  width: 150px;
+}
 input[type="text"] {
   padding: 0.1rem;
   padding-left: 0.5rem;

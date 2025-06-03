@@ -1,6 +1,30 @@
 
+let contadorAlumnos = 1; 
+ const form = document.getElementById('est-formulario-registro');
 
- let contadorAlumnos = 1; 
+form.addEventListener('submit', function (event) {
+   // event.preventDefault(); // ✅ Esto evita la recarga del formulario
+
+    const formData = new FormData(form);
+    const datos = {};
+
+    for (const [key, value] of formData.entries()) {
+      const match = key.match(/^([^\[]+)\[(\d+)\]\[([^\]]+)\]$/);
+      if (match) {
+        const grupo = match[1];
+        const index = match[2];
+        const campo = match[3];
+
+        if (!datos[grupo]) datos[grupo] = [];
+        if (!datos[grupo][index]) datos[grupo][index] = {};
+        datos[grupo][index][campo] = value;
+      } else {
+        datos[key] = value;
+      }
+    }
+
+    console.log('📦 Datos del formulario:', datos);
+});
 document.getElementById("est-btn-agregar-alumno").addEventListener("click", function () {
   const contenedor = document.getElementById("est-alumnos-contenedor");
 
@@ -81,5 +105,8 @@ document.addEventListener('click', function (e) {
 });
 
 /*PARA EL REGISTRO*/
-const btnRegistrar = document.querySelector('#enviarregistroalumno');
+
+
+
+
 

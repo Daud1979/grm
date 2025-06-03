@@ -44,4 +44,5 @@ router.post('/modificarcurso',  upload.fields([    { name: 'imagen', maxCount: 1
 router.post('/modificardocente',  upload.single('imagen') ,  homeController.modificardocente);
 //GESTION CURSO
 router.post('/registrarcurso',homeController.registrarcurso);
+router.post('/registraralumno',homeController.registraralumno);
 module.exports = router;

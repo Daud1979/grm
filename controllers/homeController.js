@@ -11,6 +11,9 @@ const Usuarios=require('../models/Usuarios');
 const Carrusels=require('../models/Carrusel');
 const Curso=require('../models/Curso');
 const sharp = require('sharp');
+const Apoderado = require('../models/Apoderado');
+const Alumno = require('../models/Alumno');
+
 /*PANTALLA INICIAL */
 exports.home = async (req, res) => {
   const carouselPath = path.join(publicPath, 'images', 'carrusel');
@@ -965,10 +968,22 @@ exports.modificardocente = async (req, res) => {
 /*FIN DOCENTE*/
 
 /*ESTUDIANTES */
-exports.estudiante= async (req, res) =>{
-  carrusel = await Curso.find();   
-  res.render('estudiantesadmin',{carrusel});
-}
+exports.estudiante = async (req, res) => {
+  try {
+    const carrusel = await Curso.find(); // Si es necesario para la vista
+
+    // Traer todos los alumnos y sus apoderados
+    const alumnos = await Alumno.find()
+      .populate('apoderados') // trae los datos de los apoderados relacionados
+      .lean(); // para que sea más rápido y compatible con la vista
+console.log(alumnos);
+    res.render('estudiantesadmin', { carrusel, alumnos });
+  } catch (error) {
+    console.error("Error al cargar estudiantes:", error);
+    res.status(500).send("Error al cargar estudiantes.");
+  }
+};
+
 /*FIN ESTUDIANTE */
 
 exports.registrarcurso=async(req,res)=>{
@@ -986,3 +1001,189 @@ exports.registrarcurso=async(req,res)=>{
   }
   
 }
+
+// exports.registraralumno = async (req, res) => {
+//   try {
+//     const body = req.body;
+
+//     // Convertimos el body plano en arrays de objetos
+//     const apoderados = [];
+//     const alumnos = [];
+
+//     // Parsear apoderados
+//     Object.keys(body).forEach(key => {
+//       const match = key.match(/^apoderados\[(\d+)\]\[(\w+)\]$/);
+//       if (match) {
+//         const index = parseInt(match[1]);
+//         const field = match[2];
+//         apoderados[index] = apoderados[index] || {};
+//         apoderados[index][field] = body[key];
+//       }
+//     });
+
+//     // Parsear alumnos
+//     Object.keys(body).forEach(key => {
+//       const match = key.match(/^alumnos\[(\d+)\]\[(\w+)\]$/);
+//       if (match) {
+//         const index = parseInt(match[1]);
+//         const field = match[2];
+//         alumnos[index] = alumnos[index] || {};
+//         alumnos[index][field] = body[key];
+//       }
+//     });
+
+//     // Filtrar datos vacíos (por ejemplo, apoderado 2 sin CI)
+//     const apoderadosFiltrados = apoderados.filter(a => a && a.ci);
+//     const alumnosFiltrados = alumnos.filter(a => a && a.ci_alumno);
+
+//     // 1. Crear los alumnos
+//     const alumnoIds = [];
+//     for (const alumnoData of alumnosFiltrados) {
+//       let alumno = await Alumno.findOne({ ci_alumno: alumnoData.ci_alumno });
+
+//       if (!alumno) {
+//         alumno = new Alumno({
+//           ci_alumno: alumnoData.ci_alumno,
+//           nombre: alumnoData.nombre,
+//           curso: alumnoData.curso
+//         });
+//         await alumno.save();
+//         console.log("Alumno guardado:", alumno.ci_alumno);
+//       }
+
+//       alumnoIds.push(alumno._id);
+//     }
+
+//     // 2. Crear los apoderados
+//     for (const apoderadoData of apoderadosFiltrados) {
+//       let apoderado = await Apoderado.findOne({ ci: apoderadoData.ci });
+
+//       if (!apoderado) {
+//         apoderado = new Apoderado({
+//           ci: apoderadoData.ci,
+//           nombre: apoderadoData.nombre,
+//           apellidos: apoderadoData.apellidos,
+//           hijos: alumnoIds
+//         });
+//       } else {
+//         apoderado.hijos = [...new Set([...apoderado.hijos, ...alumnoIds])];
+//       }
+
+//       await apoderado.save();
+//       console.log("Apoderado guardado:", apoderado.ci);
+
+//       // Asociar apoderado con alumnos
+//       for (const alumnoId of alumnoIds) {
+//         const alumno = await Alumno.findById(alumnoId);
+//         if (!alumno.apoderados.includes(apoderado._id)) {
+//           alumno.apoderados.push(apoderado._id);
+//           await alumno.save();
+//         }
+//       }
+//     }
+
+//     return res.redirect('/GRMEstudiante');
+
+//   } catch (error) {
+//     console.error("Error en registro:", error);
+//     return res.status(500).send("Ocurrió un error al registrar los datos.");
+//   }
+// };
+
+exports.registraralumno = async (req, res) => {
+  try {
+    const body = req.body;
+
+    const apoderados = [];
+    const alumnos = [];
+
+    // Parsear y limpiar apoderados
+    Object.keys(body).forEach(key => {
+      const match = key.match(/^apoderados\[(\d+)\]\[(\w+)\]$/);
+      if (match) {
+        const index = parseInt(match[1]);
+        const field = match[2];
+        apoderados[index] = apoderados[index] || {};
+        apoderados[index][field] = (body[key] || '').trim();
+      }
+    });
+
+    // Parsear y limpiar alumnos
+    Object.keys(body).forEach(key => {
+      const match = key.match(/^alumnos\[(\d+)\]\[(\w+)\]$/);
+      if (match) {
+        const index = parseInt(match[1]);
+        const field = match[2];
+        alumnos[index] = alumnos[index] || {};
+        alumnos[index][field] = (body[key] || '').trim();
+      }
+    });
+
+    const apoderadosFiltrados = apoderados.filter(a => a && a.ci);
+    const alumnosFiltrados = alumnos.filter(a => a && a.ci_alumno);
+
+    // Guardamos los IDs de alumnos creados/actualizados
+    const alumnoIds = [];
+
+    for (const alumnoData of alumnosFiltrados) {
+      let alumno = await Alumno.findOne({ ci_alumno: alumnoData.ci_alumno });
+
+      if (!alumno) {
+        alumno = new Alumno({
+          ci_alumno: alumnoData.ci_alumno,
+          nombre: alumnoData.nombre,
+          curso: alumnoData.curso,
+          apoderados: [] // se llenará luego
+        });
+        await alumno.save();
+        console.log("Alumno registrado:", alumno.ci_alumno);
+      } else {
+        // Actualizar si ya existe
+        alumno.nombre = alumnoData.nombre;
+        alumno.curso = alumnoData.curso;
+        await alumno.save();
+        console.log("Alumno actualizado:", alumno.ci_alumno);
+      }
+
+      alumnoIds.push(alumno._id);
+    }
+
+    for (const apoderadoData of apoderadosFiltrados) {
+      let apoderado = await Apoderado.findOne({ ci: apoderadoData.ci });
+
+      if (!apoderado) {
+        apoderado = new Apoderado({
+          ci: apoderadoData.ci,
+          nombre: apoderadoData.nombre,
+          apellidos: apoderadoData.apellidos,
+          hijos: alumnoIds
+        });
+        await apoderado.save();
+        console.log("Apoderado registrado:", apoderado.ci);
+      } else {
+        // Actualiza los datos y agrega hijos sin duplicar
+        apoderado.nombre = apoderadoData.nombre;
+        apoderado.apellidos = apoderadoData.apellidos;
+        apoderado.hijos = [...new Set([...apoderado.hijos, ...alumnoIds])];
+        await apoderado.save();
+        console.log("Apoderado actualizado:", apoderado.ci);
+      }
+
+      // Asociar apoderado con alumnos (evitar duplicados)
+      for (const alumnoId of alumnoIds) {
+        const alumno = await Alumno.findById(alumnoId);
+        if (!alumno.apoderados.includes(apoderado._id)) {
+          alumno.apoderados.push(apoderado._id);
+          await alumno.save();
+        }
+      }
+    }
+
+    return res.redirect('/GRMEstudiante');
+
+  } catch (error) {
+    console.error("Error en registro:", error);
+    return res.status(500).send("Ocurrió un error al registrar los datos.");
+  }
+};
+

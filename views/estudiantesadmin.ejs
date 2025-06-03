@@ -4,7 +4,7 @@
  <div class="est-boton-agregar-curso">
   <button type="button" class="est-btn" id="est-btn-agregar-curso" data-bs-toggle="modal" data-bs-target="#modalCurso">Añadir Nuevo Curso</button>
 </div>
-<form action="/" method="POST" id="est-formulario-registro">
+<form action="/registraralumno" method="POST" id="est-formulario-registro">
 
   <!-- APODERADO 1 -->
   <fieldset class="est-fieldset">
@@ -55,14 +55,16 @@
         <input type="text"  name="alumnos[0][ci_alumno]" required>
       </div>
       <div>
-        <label>Nombre</label>
+        <label>Nombre y Apellidos</label>
         <input type="text" name="alumnos[0][nombre]" required>
       </div>
+      
       <div>
         <label>Curso</label>
          <select class="select selectalumno" name="alumnos[0][curso]" required>        
+          <option value="" disabled selected>Seleccione un curso</option>
           <% carrusel.forEach((img) => { %>
-              <option value="" disabled selected>Seleccione un curso</option>
+              
             <option value="<%= img.curso %>"><%= img.curso %></option>
           <% }) %>
         </select>
@@ -73,8 +75,40 @@
   <button type="button" class="est-btn" id="est-btn-agregar-alumno">Añadir Alumno</button>
 </div>
 </fieldset>
-  <button type="submit" class="est-btn">Guardar registro</button>
+   <button type="submit" class="est-btn">Guardar registro</button>
 </form>
+<!--AQUI FORMULARIO-->
+<h3>Listado de Estudiantes y Apoderados</h3>
+<table class="carrusel-tabla">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>CI Alumno</th>
+      <th>Nombre</th>
+      <th>Curso</th>
+      <th>Apoderados</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% alumnos.forEach((alumno, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= alumno.ci_alumno %></td>
+        <td><%= alumno.nombre %></td>
+        <td><%= alumno.curso %></td>
+        <td>
+          <ul>
+            <% alumno.apoderados.forEach(apo => { %>
+              <li><%= apo.nombre.trim() %> <%= apo.apellidos.trim() %> (CI: <%= apo.ci.trim() %>)</li>
+            <% }) %>
+          </ul>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<!--FIN FORMULARIO-->
 <!--modal-->
 <!-- Modal Bootstrap: Añadir Nuevo Curso -->
 <!-- Modal -->
@@ -119,6 +153,7 @@
  <!--fin modal-->
 
 </div>
+
 <script>const cursosGlobal = <%- JSON.stringify(carrusel.map(c => c.curso)) %>;</script>
 <script src="/js/estudianteadmin.js"></script>
 <%- include('./partials/footer') %>
