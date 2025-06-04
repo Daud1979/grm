@@ -18,6 +18,16 @@ const ApoderadoSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+     usuario: {
+        type: String,
+        required: true,
+        trim: true
+    },
+     passwrd: {
+        type: String,
+        required: true,
+        trim: true
+    },
     // Referencia a los alumnos que tiene a su cargo (relación N:N)
     hijos: [{
         type: mongoose.Schema.Types.ObjectId,

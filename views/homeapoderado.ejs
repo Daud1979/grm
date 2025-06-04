@@ -1,0 +1,160 @@
+<%- include('./partials/headerapoderado') %>
+ <div class="container containercarrusel">
+  <h2 style="text-align: center;">LISTA DE ALUMNOS DEL ESTABLECIMIENTO</h2>
+ <p><strong>Carnet Identidad:</strong> <%= apoderado.ci %></p>
+ <p><strong>Nombre:</strong> <%= apoderado.nombre %></p>
+<h3 style="padding-top: 1rem;">Hijos Registrados</h3>
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaAlumnosP">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>CI Alumno</th>
+        <th>Nombre</th>
+        <th>Curso</th>         
+      </tr>
+    </thead>
+    <tbody id="alumnosa">
+      <% hijos.forEach((alumno, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= alumno.ci_alumno %></td>
+          <td><%= alumno.nombre %></td>
+          <td><%= alumno.curso %></td>         
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<!---->
+<h3>LISTA DE INCIDENCIAS DE LOS ALUMNOS PENDIENTES</h3>
+<!-- Buscador -->
+<div  class="buscardorpeque input-group mb-3 mt-3 col-sm-6">
+  <input type="text" id="buscador" class="form-control" placeholder="Buscar por nombre o título...">
+</div>
+
+<!-- Tabla de Incidencias -->
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaIncidencias">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>CI Alumno</th>
+        <th>Nombre</th>
+        <th>Título</th>
+        <th>Fecha</th>
+        <th>Motivo</th>
+        <th style="width: 50px;">Imagen</th>
+        <th>Acciones</th> 
+        <th></th>     
+      </tr>
+    </thead>
+    <tbody id="incidenciadatos">
+      <% incidencias.forEach((i, index) => { %>
+        <tr class="<%= i.estado === 0 ? 'fila-roja' : '' %>">
+          <td><%= index + 1 %></td>
+          <td><%= i.alumno?.ci_alumno || 'N/A' %></td>
+          <td><%= i.alumno?.nombre || 'Sin nombre' %></td>
+          <td><%= i.titulo %></td>
+          <td><%= new Date(i.fecha).toLocaleDateString() %></td>
+          <td><%= i.motivo %></td>
+          
+          <td style="height:70px;">
+            <% if (i.imagenUrl) { %>
+              <img src="<%= i.imagenUrl %>" alt="Incidencia" style="height: 60px; cursor: pointer;"
+                  class="img-incidencia-modal-trigger"
+                  data-img="<%= i.imagenUrl %>">
+              <% } else { %>
+              <em>Sin imagen</em>
+          <% } %>
+          </td>
+          <td><%= i.acciones %></td>
+          <td style="width: 100px;">
+            <% if (parseInt(i.estado) === 0) { %>
+  <button class="btn-estado btn-rojo" id="aceptar" data-id="<%= i._id %>">
+    No Revisado
+  </button>
+<% } else { %>
+  
+<% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- Modal de imagen -->
+<div id="modalImagen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:9999;">
+  <img id="imagenModalGrande" src="" style="max-width:90%; max-height:90%;">
+</div>
+
+<h3>LISTA DE INCIDENCIAS DE LOS ALUMNOS YA REVISADAS</h3>
+<!-- Buscador -->
+<div  class="buscardorpeque input-group mb-3 mt-3 col-sm-6">
+  <input type="text" id="buscadorA" class="form-control" placeholder="Buscar por nombre o título...">
+</div>
+
+<!-- Tabla de Incidencias -->
+<div class="tabla-responsive">
+  <table class="tabla-estudiantes" id="tablaIncidenciasA">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>CI Alumno</th>
+        <th>Nombre</th>
+        <th>Título</th>
+        <th>Fecha</th>
+        <th>Motivo</th>
+        <th style="width: 50px;">Imagen</th>
+        <th>Acciones</th>             
+      </tr>
+    </thead>
+    <tbody id="incidenciadatosA">
+      <% incidencias2.forEach((i, index) => { %>
+        <tr class="<%= i.estado === 0 ? 'fila-roja' : '' %>">
+          <td><%= index + 1 %></td>
+          <td><%= i.alumno?.ci_alumno || 'N/A' %></td>
+          <td><%= i.alumno?.nombre || 'Sin nombre' %></td>
+          <td><%= i.titulo %></td>
+          <td><%= new Date(i.fecha).toLocaleDateString() %></td>
+          <td><%= i.motivo %></td>
+          
+          <td style="height:70px;">
+            <% if (i.imagenUrl) { %>
+              <img src="<%= i.imagenUrl %>" alt="Incidencia" style="height: 60px; cursor: pointer;"
+                  class="img-incidencia-modal-trigger"
+                  data-img="<%= i.imagenUrl %>">
+              <% } else { %>
+              <em>Sin imagen</em>
+          <% } %>
+          </td>
+          <td><%= i.acciones %></td>        
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- Modal de imagen -->
+<div id="modalImagen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:9999;">
+  <img id="imagenModalGrande" src="" style="max-width:90%; max-height:90%;">
+</div>
+
+<div id="modalImagenA" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:9999;">
+  <img id="imagenModalGrandeA" src="" style="max-width:90%; max-height:90%;">
+</div>
+
+
+
+   
+</div>
+<%- include('./partials/footer') %>
+  
+<script src="/js/homeapoderado.js"></script>
+

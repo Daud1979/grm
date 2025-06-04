@@ -1,0 +1,43 @@
+<%- include('./partials/headerapoderado') %>
+<div class="container containercarrusel">
+
+<div class="container my-4 col-12 col-sm-6 bg-white p-3 border rounded-2">
+  <h3 class="text-center mb-4">DATOS DEL DOCENTE</h3>
+ <form action="/datosapoderado" method="POST" class="needs-validation c" novalidate>
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <div class="col-12 col-sm-3">
+            <label for="ci" class="form-label">Carnet Identidad</label>
+            <input type="text" class="form-control" name="ci" id="ci" value="<%= apoderado.ci %>" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" name="nombre" id="nombre" value="<%= apoderado.nombre %>" required>
+        </div>    
+        <div class="col-md-6">
+            <label for="nombre" class="form-label">Apellidos</label>
+            <input type="text" class="form-control" name="apellidos" id="apellidos" value="<%= apoderado.apellidos %>" required>
+        </div>
+        <div class="col-md-6">
+            <div class="col-12 col-sm-6">
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control" name="usuario" id="usuario" value="<%= apoderado.usuario %>" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-12 col-sm-6">
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control " name="passwrd" id="passwrd" value="<%= apoderado.passwrd %>" required>
+            </div>
+        </div>       
+    </div>  
+
+    <div class="text-end">
+      <button type="submit" class="btn btn-sm btn-primary">Modificar Datos</button>
+    </div>
+  </form>
+</div>
+</div>
+<script src="/js/datosapoderado.js"></script>
+<%- include('./partials/footer') %>

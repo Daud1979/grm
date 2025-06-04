@@ -11,46 +11,53 @@ router.get('/promociones',homeController.promociones);
 
 router.get('/iniciosesion',homeController.iniciosesion);
 router.post('/verificariniciosesion',homeController.verificariniciosesion);
-
+const { verificarAdmin, verificarDocente,  verificarApoderado} = require('../middlewares/verificarSesion');
 
 
 
 //VER
-router.get('/GRMCarrusel',homeController.carrusel);
-router.get('/GRMEvento',homeController.evento);
-router.get('/GRMNoticia',homeController.noticia);
-router.get('/GRMCurso',homeController.curso);
-router.get('/GRMPromociones',homeController.promocion);
-router.get('/GRMDocente',homeController.docente);
-router.get('/GRMEstudiante',homeController.estudiante);
+router.get('/GRMCarrusel',verificarAdmin,homeController.carrusel);
+router.get('/GRMEvento',verificarAdmin,homeController.evento);
+router.get('/GRMNoticia',verificarAdmin,homeController.noticia);
+router.get('/GRMCurso',verificarAdmin,homeController.curso);
+router.get('/GRMPromociones',verificarAdmin,homeController.promocion);
+router.get('/GRMDocente',verificarAdmin,homeController.docente);
+router.get('/GRMEstudiante',verificarAdmin,homeController.estudiante);
 //ELIMINAR
-router.post('/carrusels',homeController.eliminarcarrusel); 
-router.post('/noticias',homeController.eliminarnoticia);
-router.post('/eventos',homeController.eliminarevento);
-router.post('/cursos',homeController.eliminarcurso);
-router.post('/promocion',homeController.eliminarpromocion);
-router.post('/docente',homeController.eliminardocente);
+router.post('/carrusels',verificarAdmin,homeController.eliminarcarrusel); 
+router.post('/noticias',verificarAdmin,homeController.eliminarnoticia);
+router.post('/eventos',verificarAdmin,homeController.eliminarevento);
+router.post('/cursos',verificarAdmin,homeController.eliminarcurso);
+router.post('/promocion',verificarAdmin,homeController.eliminarpromocion);
+router.post('/docente',verificarAdmin,homeController.eliminardocente);
 //REGISTRAR
-router.post('/registrarcarrusel',  upload.single('imagen'), homeController.registrarcarrusel);
-router.post('/registrarnoticia',  upload.single('imagen'), homeController.registrarnoticia);
-router.post('/registrarevento',  upload.single('imagen'), homeController.registrarevento);
-router.post('/registrarcursos',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.registrarcursos);
-router.post('/registrarpromocion',  upload.single('imagen'), homeController.registrarpromocion);
-router.post('/registrardocente',  upload.single('imagen'), homeController.registrardocente);
+router.post('/registrarcarrusel',verificarAdmin,  upload.single('imagen'), homeController.registrarcarrusel);
+router.post('/registrarnoticia',verificarAdmin,  upload.single('imagen'), homeController.registrarnoticia);
+router.post('/registrarevento',verificarAdmin,  upload.single('imagen'), homeController.registrarevento);
+router.post('/registrarcursos',verificarAdmin,  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.registrarcursos);
+router.post('/registrarpromocion',verificarAdmin,  upload.single('imagen'), homeController.registrarpromocion);
+router.post('/registrardocente',verificarAdmin,  upload.single('imagen'), homeController.registrardocente);
 //OBTENER CURSO
-router.post('/obtenercurso',homeController.obtenercurso); 
-router.post('/obtenerdocente',homeController.obtenerdocente); 
-router.post('/modificarcurso',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.modificarcurso);
-router.post('/modificardocente',  upload.single('imagen') ,  homeController.modificardocente);
+router.post('/obtenercurso',verificarAdmin,homeController.obtenercurso); 
+router.post('/obtenerdocente',verificarAdmin,homeController.obtenerdocente); 
+router.post('/modificarcurso',verificarAdmin,  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.modificarcurso);
+router.post('/modificardocente',verificarAdmin,  upload.single('imagen') ,  homeController.modificardocente);
 //GESTION CURSO
-router.post('/registrarcurso',homeController.registrarcurso);
-router.post('/registraralumno',homeController.registraralumno);
-router.post('/eliminaralumno',homeController.eliminaralumno);
-router.post('/acciones', homeController.acciones);//es para docente
-router.post('/registrarincidencia',upload.single('imagen'), homeController.registrarincidencia);
-router.post('/eliminarincidencia',homeController.eliminarincidencia);
-router.get('/incidenciasarchivadas',homeController.archivo);
-router.get('/acciones', homeController.acciones);//es get para el menu
-router.get('/datosdocente',homeController.datosdocente);
-router.post('/datosdocente',upload.single('imagenFile'), homeController.modifcardatosdocente);
+router.post('/registrarcurso',verificarAdmin,homeController.registrarcurso);
+router.post('/registraralumno',verificarAdmin,homeController.registraralumno);
+router.post('/eliminaralumno',verificarAdmin,homeController.eliminaralumno);
+router.post('/acciones',verificarDocente, homeController.acciones);//es para docente
+router.post('/registrarincidencia',verificarDocente,upload.single('imagen'), homeController.registrarincidencia);
+router.post('/eliminarincidencia',verificarDocente,homeController.eliminarincidencia);
+router.get('/incidenciasarchivadas',verificarDocente,homeController.archivo);
+router.get('/acciones',verificarDocente, homeController.acciones);//es get para el menu
+router.get('/datosdocente',verificarDocente,homeController.datosdocente);
+router.post('/datosdocente',verificarDocente,upload.single('imagenFile'), homeController.modifcardatosdocente);
+
+router.post('/homeApoderado',verificarApoderado,homeController.homeApoderado);
+router.get('/homeApoderado',verificarApoderado,homeController.homeApoderado);
+router.post('/cambiarestadoincidencia',verificarApoderado,homeController.cambiarestadoincidencia);
+router.get('/datosapoderado',verificarApoderado, homeController.datosapoderado);
+router.post('/datosapoderado',verificarApoderado, homeController.modificardatosapoderado);
+router.get('/cerrarsesion',verificarApoderado,homeController.cerrarsesion);
 module.exports = router;

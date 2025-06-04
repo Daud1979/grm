@@ -183,7 +183,7 @@ exports.promociones = async (req, res) => {
 /*FIN PANTALLA INICIAL */
 
 /*INICIO SESION */
-exports.iniciosesion = async (req, res) =>{
+exports.iniciosesion = async (req, res) =>{ 
   res.render('iniciosesion');
 }
 exports.verificariniciosesion = async (req, res) => {
@@ -200,6 +200,8 @@ exports.verificariniciosesion = async (req, res) => {
     });
 
     if (usuarioEncontrado) {
+      req.session.idAdmin = usuarioEncontrado._id;
+      req.session.Tipo ='administrador';
       const carruselDocs = await Carrusels.find();   // usa el modelo correcto
       const dirPublic = path.join(__dirname, '..', 'public', 'images', 'carrusel');
       const imagenes  = carruselDocs
@@ -232,6 +234,7 @@ exports.verificariniciosesion = async (req, res) => {
 
     if (usuarioEncontrado) {
       req.session.idDocente = usuarioEncontrado._id;
+      req.session.Tipo ='docente';
       return res.json({ existe: 2, usuario:usuarioEncontrado });
     } else {
       return res.json({ existe: 0 });
@@ -245,8 +248,26 @@ exports.verificariniciosesion = async (req, res) => {
 
   }
   else if(tipo=='tutor')
-  {
-console.log(tipo);
+  {    
+    try {
+      const usuarioEncontrado = await Apoderado.findOne({
+      usuario:usuario,
+      passwrd: passwrd,
+      
+    });   
+    if (usuarioEncontrado) {
+      req.session.idApoderado = usuarioEncontrado._id;
+      req.session.Tipo ='tutor';
+      return res.json({ existe: 3, usuario:usuarioEncontrado });
+    } else {
+      return res.json({ existe: 0 });
+    }
+    }
+    catch (error)
+    {
+      console.error('Error al verificar el inicio de sesión:', error);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
   }
   else
   {
@@ -258,7 +279,6 @@ console.log(tipo);
 
 /*CARRUSEL */
 exports.carrusel = async (req, res) => {
-
       const carruselDocs = await Carrusels.find();   // usa el modelo correcto
 
       // 2.2- Filtrar imágenes que realmente existan
@@ -1414,4 +1434,183 @@ exports.modifcardatosdocente = async (req, res) => {
     console.error('Error al modificar datos del docente:', error);
     res.status(500).send('Error al modificar datos.');
   }
+};
+/*AQUI APODERADO*/
+
+
+exports.homeApoderado = async (req, res) => {
+  try {
+    const id = req.session.idApoderado;
+
+    // Buscar apoderado y sus hijos
+    const apoderado = await Apoderado.findById(id)
+      .populate('hijos')
+      .lean();
+
+    if (!apoderado || !apoderado.hijos || apoderado.hijos.length === 0) {
+      return res.render('homeapoderado', {
+        apoderado,
+        hijos: [],
+        incidencias: []
+      });
+    }
+
+    const idsHijos = apoderado.hijos.map(h => h._id);
+
+    // Buscar incidencias de los hijos
+   const incidencias = await Incidencia.find({
+  alumno: { $in: idsHijos },
+  estado: { $in: 0 } // si quieres ambos estados
+    })
+    .populate('alumno')
+    .sort({ fecha: -1 }) // ← ordena por fecha descendente
+    .lean();
+    // Agregar imagenUrl si tiene nombreImagen
+    const incidenciasConImagen = incidencias.map(i => {
+      if (i.nombreImagen) {
+        i.imagenUrl = `/images/incidencia/${i.nombreImagen}`;
+      } else {
+        i.imagenUrl = null;
+      }
+      return i;
+    });
+  ///////////////////////////////////
+  const incidencias2 = await Incidencia.find({
+  alumno: { $in: idsHijos },
+  estado: { $in: 1 } // si quieres ambos estados
+    })
+    .populate('alumno')
+    .sort({ fecha: -1 }) // ← ordena por fecha descendente
+    .lean();
+    // Agregar imagenUrl si tiene nombreImagen
+    const incidenciasConImagen2 = incidencias2.map(i => {
+      if (i.nombreImagen) {
+        i.imagenUrl = `/images/incidencia/${i.nombreImagen}`;
+      } else {
+        i.imagenUrl = null;
+      }
+      return i;
+    });
+  //////////////////////////////////
+    res.render('homeapoderado', {
+      apoderado,
+      hijos: apoderado.hijos,
+      incidencias: incidenciasConImagen,
+      incidencias2: incidenciasConImagen2
+    });
+
+  } catch (error) {
+    console.error('Error al cargar homeApoderado:', error);
+    res.status(500).send('Error en el servidor');
+  }
+};
+
+exports.cambiarestadoincidencia = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const resultado = await Incidencia.updateOne(
+      { _id: id },
+      { $set: { estado: 1 } }
+    );
+
+    if (resultado.modifiedCount > 0) {
+      return res.json({ existe: 1 });
+    } else {
+      return res.json({ existe: 0 });
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado de incidencia:', error);
+    return res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+exports.datosapoderado = async(req,res)=>{
+   const id = req.session.idApoderado;
+   const apoderado = await Apoderado.findById(id).select('-hijos');
+   res.render('datosapoderado', {apoderado});
+}
+
+exports.modificardatosapoderado = async (req, res) => {
+  try {
+    const id = req.session.idApoderado;
+
+    const { ci, nombre, apellidos, usuario, passwrd } = req.body;
+    console.log('Datos recibidos:', { ci, nombre, apellidos, usuario, passwrd });
+
+    const result = await Apoderado.findByIdAndUpdate(id, {
+      ci, nombre, apellidos, usuario, passwrd
+    }, {
+      new: true,
+      runValidators: true
+    });
+
+    console.log('Resultado del update:', result);
+
+    const apoderado = await Apoderado.findById(id).select('-hijos');
+    res.render('datosapoderado', { apoderado });
+
+  } catch (error) {
+    console.error('Error al modificar datos del apoderado:', error);
+    res.status(500).send('Error al modificar datos.');
+  }
+};
+
+exports.cerrarsesion = async (req, res) => {
+  req.session.destroy(async (err) => {
+    if (err) {
+      console.error('Error al cerrar sesión:', err);
+      return res.status(500).send('Error al cerrar sesión');   }
+
+    res.clearCookie('connect.sid');
+    cargarDatosHome(res);
+    
+  });
+};
+
+async function cargarDatosHome(res) {
+  const carouselPath = path.join(publicPath, 'images', 'carrusel');
+  let carouselImages = [];
+  let imageGridItems = [];
+  let imageGridItemsNoticia = [];
+
+  try {
+    const files = await fs.readdir(carouselPath);
+    carouselImages = files
+      .filter(f => ['.jpg', '.jpeg', '.png', '.gif'].includes(path.extname(f).toLowerCase()))
+      .map(f => `/images/carrusel/${f}`);
+
+    const eventos = await Evento.find().lean();
+    imageGridItems = eventos.map(ev => {
+      const archivo = ev.nombreImagen?.trim() ? ev.nombreImagen : 'default.jpg';
+      return {
+        imagePath: `/images/eventos/${archivo}`,
+        titulo: ev.titulo,
+        description: ev.descripcion
+      };
+    });
+
+    const noticias = await Noticia.find().lean();
+    imageGridItemsNoticia = noticias.map(ev => {
+      const archivo = ev.nombreImagen?.trim() ? ev.nombreImagen : 'default.jpg';
+      return {
+        imagePath: `/images/noticias/${archivo}`,
+        titulo: ev.titulo,
+        description: ev.descripcion
+      };
+    });
+
+    // ✅ Renderiza la vista directamente desde esta función
+    res.render('home', { carouselImages, imageGridItems, imageGridItemsNoticia });
+  } catch (err) {
+    console.error('❌ Error preparando datos para home:', err.message);
+    res.status(500).send('Error al cargar la página principal');
+  }
+}
+
+exports.verificarSesionAdmin = (req, res, next) => {
+  if (req.session.idAdmin) {
+    return next(); // Usuario autenticado, puede continuar
+  }
+  return res.redirect('/home'); // O responde con un código 401 si es una API
 };

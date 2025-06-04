@@ -30,7 +30,11 @@ btnEnviar.addEventListener('click',()=>{
                 }
                 else if (data.existe==2)
                 {
-                    enviarUsuario(data.usuario);
+                    enviarDocente(data.usuario);
+                }
+                else if (data.existe==3)
+                {
+                    enviarApoderado(data.usuario);
                 }
                 else
                 {
@@ -46,10 +50,30 @@ btnEnviar.addEventListener('click',()=>{
     }
 });
 
-function enviarUsuario(usuario) {
+function enviarDocente(usuario) {
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = '/acciones'; // Tu ruta en el servidor
+  form.style.display = 'none';
+
+  // Agregamos los campos uno por uno
+  for (const key in usuario) {
+    if (usuario.hasOwnProperty(key)) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = usuario[key];
+      form.appendChild(input);
+    }
+  }
+
+  document.body.appendChild(form);
+  form.submit(); // Esto enviará al servidor y permitirá la redirección
+}
+function enviarApoderado(usuario) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/homeApoderado'; // Tu ruta en el servidor
   form.style.display = 'none';
 
   // Agregamos los campos uno por uno
