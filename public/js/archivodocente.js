@@ -40,3 +40,24 @@
     }
 
   });
+
+  
+  const modal = document.getElementById('modalImagen');
+    const imagenGrande = document.getElementById('imagenModalGrande');
+
+    // Abrir modal al hacer clic en imagen
+    document.querySelectorAll('#incidenciadatos img').forEach(img => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        imagenGrande.src = img.src;
+        modal.style.display = 'flex';
+      });
+    });
+
+    // Cerrar modal al hacer clic fuera de la imagen
+    modal.addEventListener('click', (e) => {
+      if (e.target !== imagenGrande) {
+        modal.style.display = 'none';
+        imagenGrande.src = '';
+      }
+    });

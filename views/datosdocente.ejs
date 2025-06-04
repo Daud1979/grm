@@ -1,0 +1,51 @@
+<%- include('./partials/headerdocente') %>
+<div class="container containercarrusel">
+
+<div class="container my-4">
+  <h3 class="text-center mb-4">DATOS DEL DOCENTE</h3>
+  <form action="/datosdocente" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <input type="hidden" name="id" value="<%= docente._id %>">
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="ci" class="form-label">Carnet Identidad</label>
+            <input type="text" class="form-control" name="ci" id="ci" value="<%= docente.ci %>" required>
+        </div>
+        <div class="mb-2">
+            <label for="nombre" class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" name="nombre" id="nombre" value="<%= docente.nombre %>" required>
+        </div>    
+        <div class="mb-2">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" id="descripcion" rows="4" required><%= docente.descripcion %></textarea>
+        </div>
+        <div class="col-md-6">
+            <label for="usuario" class="form-label">Usuario</label>
+            <input type="text" class="form-control" name="usuario" id="usuario" value="<%= docente.usuario %>" required>
+        </div>
+        <div class="col-md-6">
+            <label for="usuario" class="form-label">Usuario</label>
+            <input type="password" class="form-control" name="passwrd" id="passwrd" value="<%= docente.usuario %>" required>
+        </div>
+       
+    </div>
+    <div class="row mb-2">      
+      <div class="col-md-6">
+        <label for="imagenFile" class="form-label">Nueva imagen (opcional)</label>
+        <input class="form-control" type="file" id="imagenFile" name="imagenFile" accept="image/*">
+      </div>
+    </div>
+
+    <div class="mb-3 text-center">
+      <label class="form-label">Imagen actual:</label><br>
+      <img src="<%= docente.imagenUrl %>" alt="Imagen actual" class="img-thumbnail" style="max-height: 200px;">
+    </div>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Modificar Datos</button>
+    </div>
+  </form>
+</div>
+</div>
+<script src="/js/datosdocente.js"></script>
+<%- include('./partials/footer') %>

@@ -4,9 +4,9 @@ btnSubirimagen.addEventListener('click', () => {
   const fileInput = document.getElementById('imagenFile');
   const archivo = fileInput.files[0];
 
-  if (nombreInput.value.trim() !== '' && archivo) {
+  if (archivo) {
     const datos = new FormData();
-    datos.append('nombreImagen', nombreInput.value.trim());
+  
     datos.append('imagen', archivo);  
 
     fetch('/registrarcarrusel', {

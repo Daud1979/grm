@@ -6,9 +6,11 @@
     }
 /***********************/
 body {
-  margin: 0; 
+  margin: 0.5rem; 
   font-family: sans-serif;
-background: #e9e8e8;
+ background: #e9e8e8;
+overflow-y:auto;
+overflow-x: hidden;
 }
 
 .imgcntrcarousel {
@@ -617,7 +619,7 @@ background: #e9e8e8;
     }
 
     .grm-btn-login {
-      background: rgb(5, 196, 221);
+      background: rgb(153, 152, 152);
       border: none;
       width: 100%;
       transition: background 0.25s;
@@ -646,6 +648,10 @@ background: #e9e8e8;
     }
     .mensajeError{
       display: block;
+    }
+    #passwrd{
+      padding: 0.1rem;
+      padding-left: 1rem;
     }
 /*FIN INICIO SESION*/
 /*carrusel admin*/

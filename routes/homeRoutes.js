@@ -47,7 +47,10 @@ router.post('/registrarcurso',homeController.registrarcurso);
 router.post('/registraralumno',homeController.registraralumno);
 router.post('/eliminaralumno',homeController.eliminaralumno);
 router.post('/acciones', homeController.acciones);//es para docente
-router.post('/registrarincidencia', homeController.registrarincidencia);
+router.post('/registrarincidencia',upload.single('imagen'), homeController.registrarincidencia);
 router.post('/eliminarincidencia',homeController.eliminarincidencia);
 router.get('/incidenciasarchivadas',homeController.archivo);
+router.get('/acciones', homeController.acciones);//es get para el menu
+router.get('/datosdocente',homeController.datosdocente);
+router.post('/datosdocente',upload.single('imagenFile'), homeController.modifcardatosdocente);
 module.exports = router;

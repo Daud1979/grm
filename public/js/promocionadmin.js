@@ -5,12 +5,10 @@ btnSubirimagen.addEventListener('click', () => {
   const titulo = document.querySelector('#titulo');
   const descripcion = document.querySelector('#descripcion');
   const fileInput = document.querySelector('#imagenFile');
-  const nombreInput = document.querySelector('#nombreImagen');
+  
   const archivo = fileInput.files[0];
-
-  if (nombreInput.value.trim() !== '' && archivo && titulo.value != '' && descripcion.value!='') {
-    const datos = new FormData();
-    datos.append('nombreImagen', nombreInput.value.trim());
+  if ( archivo && titulo.value != '' && descripcion.value!='') {
+    const datos = new FormData();    
     datos.append('titulo', titulo.value.trim());
     datos.append('descripcion', descripcion.value.trim());
     datos.append('imagen', archivo);  

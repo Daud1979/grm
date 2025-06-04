@@ -22,6 +22,10 @@ const InicidenciaSchema = new mongoose.Schema({
         type: String,
         default: '0'
     },
+    nombreImagen:{
+        type:String,
+        trim: true
+    },
     fechaestado: {
         type: Date
     },
