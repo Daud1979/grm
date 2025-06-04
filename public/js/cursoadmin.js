@@ -14,7 +14,7 @@ btnSubirimagen.addEventListener('click', (event) => {
   const archivo3 = fileInput3.files[0]; // opcional
 
   if (archivo1 && titulo.value.trim() !== '' && descripcion.value.trim() !== '') {
-   
+
     const datos = new FormData();    
     datos.append('titulo', titulo.value.trim());
     datos.append('descripcion', descripcion.value.trim());
@@ -28,12 +28,13 @@ btnSubirimagen.addEventListener('click', (event) => {
       datos.append('imagen3', archivo3); // opcional
     }
 
-    fetch('/registrarcurso', {
+    fetch('/registrarcursos', {
       method: 'POST',
       body: datos
     })
     .then(response => response.json())
-    .then(data => {       
+    .then(data => {     
+      console.log(data)  
       if (data.existe == 1) {
         window.location.reload();     
       } else {

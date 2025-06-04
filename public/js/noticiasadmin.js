@@ -6,7 +6,7 @@ btnSubirimagen.addEventListener('click', () => {
   const nombreInput = document.querySelector('#nombreImagen');
   const fileInput = document.querySelector('#imagenFile');  
   const archivo = fileInput.files[0];
- 
+
   if (titulo.value.trim() !== '' && archivo && nombreInput.value.trim() !== '' && descripcion.value!='') {
   
     const datos = new FormData();

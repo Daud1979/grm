@@ -3,9 +3,15 @@
       <h2>Subir imagen al Carrusel</h2>
 
   <div class="carrusel-formulario">
-  <input class="carrusel-input" type="text" name="nombreImagen" id="nombreImagen" placeholder="Nombre de la imagen" required>
-  <input class="carrusel-file" type="file" name="imagen" id="imagenFile" accept="image/*" required>
-  <button class="carrusel-btn" id="btnSubirimagen">Subir Imagen</button>
+    <div class="col-12 mb-2">
+        <label class="form-label">Nombre de la Foto <span class="text-danger">*</span></label>
+        <input type="text" name="nombreImagen" id="nombreImagen" class="form-control form-control-sm" required>
+     </div>
+        <div class="col-12 mb-2">
+        <label class="form-label">Imagen (Foto)</label>
+        <input type="file" name="imagen" id="imagenFile" accept="image/*" class="form-control form-control-sm">
+      </div>  
+      <button class="carrusel-btn" id="btnSubirimagen">Subir Imagen</button>
   </div>
 
 

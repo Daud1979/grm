@@ -34,7 +34,7 @@ router.post('/docente',homeController.eliminardocente);
 router.post('/registrarcarrusel',  upload.single('imagen'), homeController.registrarcarrusel);
 router.post('/registrarnoticia',  upload.single('imagen'), homeController.registrarnoticia);
 router.post('/registrarevento',  upload.single('imagen'), homeController.registrarevento);
-router.post('/registrarcurso',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.registrarcurso);
+router.post('/registrarcursos',  upload.fields([    { name: 'imagen', maxCount: 1 },  { name: 'imagen2', maxCount: 1 }, { name: 'imagen3', maxCount: 1 } ]),  homeController.registrarcursos);
 router.post('/registrarpromocion',  upload.single('imagen'), homeController.registrarpromocion);
 router.post('/registrardocente',  upload.single('imagen'), homeController.registrardocente);
 //OBTENER CURSO

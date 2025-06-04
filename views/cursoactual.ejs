@@ -5,7 +5,6 @@
   <section class="cursosactual">
     <h2 class="h2cursoactual"><%= curso.title %></h2>
     <p class="pcursoactual"><%= curso.description %></p>
-
     <!-- Grid de imágenes -->
     <div class="imagen-gridactual">
       <div class="imagen-itemactual">
@@ -25,7 +24,7 @@
 <% }) %>
 
     <div id="imgModal" class="img-modal-overlay" role="dialog" aria-modal="true">
-  <img src="" alt="Imagen ampliada">
+     <img src="" id="imgampliadacursoactual" alt="Imagen ampliada">
 </div>
 </div>
 <%- include('./partials/footer') %>

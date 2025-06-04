@@ -1,31 +1,18 @@
 <%- include('./partials/header') %>
   <!-- GALERÍA -->
+ 
   <section  id="sectiongaleria">
-    <div class="container">
-      <h2 class="section-title">GALERIA DE IMAGENES DE NUESTRO ESTABLECIMIENTO</h2>
-     
-      <div class="gallery-wrapper">
-       <div class="scroll-container" id="galleryScroll">
-            <% if (carouselImages && carouselImages.length > 0) { %>
+   <div class="imgcntrcarousel">   
+        <% if (carouselImages && carouselImages.length > 0) { %>
                 <% carouselImages.forEach(function(imagePath) { %>
-                    <div class="gallery-item">
-                        <img src="<%= imagePath %>" alt="Imagen de la galería">
+                    <div class="imgcntrbox">
+                        <img class="imgcntimg" src="<%= imagePath %>" alt="Imagen de la galería">
                     </div>
                 <% }); %>
             <% } else { %>
                 <p>No hay imágenes disponibles para la galería.</p>
             <% } %>
-        </div>
-    </div>
-
-    <!-- Modal imagen -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-transparent border-0 d-flex justify-content-center align-items-center" style="cursor:pointer;">
-          <img src="" alt="Imagen ampliada" class="w-100 rounded-4 shadow-lg" id="modalImage" />
-        </div>
-      </div>
-    </div>
+  </div>
 
   </section>
     <!-- Próximos eventos -->

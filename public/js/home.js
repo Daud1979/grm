@@ -48,3 +48,34 @@ document.querySelectorAll(".leer-mas-btn").forEach((btn) => {
       }
     });
 
+const boxes = document.querySelectorAll('.imgcntrbox');
+let current = 0;
+
+function updateCarousel() {
+  const total = boxes.length;
+  const visibleRange = 2; // cuántas a cada lado mostrar
+
+  boxes.forEach((box, index) => {
+    const rawOffset = (index - current + total) % total;
+    const offset = rawOffset > total / 2 ? rawOffset - total : rawOffset;
+
+    if (Math.abs(offset) > visibleRange) {
+      box.style.opacity = 0;
+      box.style.transform = 'scale(0)';
+      box.style.zIndex = 0;
+    } else {
+      const scale = 1 - Math.abs(offset) * 0.2; // 1.0 -> 0.8 -> 0.6
+      const translateX = offset * 350; // separación horizontal
+      const zIndex = 100 - Math.abs(offset);
+
+      box.style.opacity = 1;
+      box.style.transform = `translateX(${translateX}px) scale(${scale})`;
+      box.style.zIndex = zIndex;
+    }
+  });
+
+  current = (current + 1) % total;
+}
+
+updateCarousel();
+setInterval(updateCarousel, 2000);

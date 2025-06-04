@@ -396,7 +396,7 @@ exports.eliminarnoticia = async (req, res) => {
 exports.registrarnoticia = async (req, res) => {
   try {
     let { nombreImagen,titulo,descripcion } = req.body;
-    console.log(req.body);
+ 
     const archivo = req.file;
     if (!nombreImagen || !archivo) {
       return res.status(400).json({ error: 'Faltan datos' });
@@ -602,10 +602,11 @@ exports.eliminarcurso = async (req, res) => {
      return res.json({ existe: 0 });
   }
 };
-exports.registrarcurso = async (req, res) => {
+exports.registrarcursos = async (req, res) => {
+  
   try {
     const { titulo, descripcion } = req.body;
-
+ 
     /* 1) Verificar que la imagen principal exista -------------------------- */
     if (!req.files || !req.files.imagen || req.files.imagen.length === 0) {
       return res.status(400).json({ error: 'La imagen principal es obligatoria' });
