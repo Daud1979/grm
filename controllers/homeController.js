@@ -1128,7 +1128,7 @@ exports.registrarcurso=async(req,res)=>{
 exports.registraralumno = async (req, res) => {
   try {
     const body = req.body;
-
+  console.log(req.body);
     const apoderados = [];
     const alumnos = [];
 
@@ -1191,6 +1191,8 @@ exports.registraralumno = async (req, res) => {
           ci: apoderadoData.ci,
           nombre: apoderadoData.nombre,
           apellidos: apoderadoData.apellidos,
+          usuario:apoderadoData.ci,
+          passwrd:apoderadoData.ci,
           hijos: alumnoIds
         });
         await apoderado.save();
